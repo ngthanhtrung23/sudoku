@@ -12,12 +12,23 @@ class Cell extends React.Component {
         return;
     }
 
+    shouldHighlightMatching(value) {
+        return this.props.highlightMatching && value === this.props.highlightMatching;
+    }
+
     renderCellCornerValues() {
         if (this.props.cell.value) {
             // Do not show corner values, if cell is filled.
             return;
         }
-        const sortedValues = Array.from(this.props.cell.cornerValues).sort();
+        const sortedValues = Array.from(this.props.cell.cornerValues)
+            .sort()
+            .map((value) => {
+                const classes = this.shouldHighlightMatching(value) ? 'matching' : '';
+                return (
+                    <span className={classes}>{value}</span>
+                );
+            });
         return (
             <span className="cell-corner-value">
                 {sortedValues}
@@ -30,7 +41,14 @@ class Cell extends React.Component {
             // Do not show center values, if cell is filled.
             return;
         }
-        const sortedValues = Array.from(this.props.cell.centerValues).sort();
+        const sortedValues = Array.from(this.props.cell.centerValues)
+            .sort()
+            .map((value) => {
+                const classes = this.shouldHighlightMatching(value) ? 'matching' : '';
+                return (
+                    <span className={classes}>{value}</span>
+                );
+            });
         return (
             <span className="cell-center-value">
                 {sortedValues}
@@ -66,7 +84,7 @@ class Cell extends React.Component {
         // Add highlighting class.
         if (this.props.cell.selected) {
             classes.push('selected');
-        } else if (this.props.highlightMatching && this.props.cell.value === this.props.highlightMatching) {
+        } else if (this.shouldHighlightMatching(this.props.cell.value)) {
             classes.push('matching');
         } else if (this.props.cell.restricted) {
             classes.push('restricted');
