@@ -77,7 +77,6 @@ class Game extends React.Component {
         for (let i = 0; i < 81; i++) {
             newGame.board.cells[i].error = false;
         }
-        console.log(newGame);
         this.setState(newGame);
     }
 
