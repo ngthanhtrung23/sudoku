@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import _ from 'lodash';
+
 import { Board } from './board.js';
 import { Control } from './control.js';
 import { GameData } from './data.js';
@@ -14,13 +16,14 @@ class Game extends React.Component {
     }
     
     cloneState() {
-        let newGame = Object.assign({}, this.state);
+        let newGame = _.clone(this.state, true);
         Object.setPrototypeOf(newGame, GameData.prototype);
         return newGame;
     }
 
     // Handle clicking on a cell.
     handleClick(cellId) {
+        console.log('handleClick ' + cellId);
         // Clear all highlighting in the board.
         let newGame = this.cloneState();
 
@@ -45,6 +48,7 @@ class Game extends React.Component {
     }
 
     fillSelectedWithValue(newValue) {
+        console.log('fillSelectedWithValue ' + newValue);
         this.clearAllError();
         let newGame = this.cloneState();
         for (let i = 0; i < 81; i++) {
@@ -55,15 +59,30 @@ class Game extends React.Component {
         this.setState(newGame);
     }
 
-    clearAllError() {
+    unfillSelected() {
+        console.log('unfillSelected');
+        this.clearAllError();
         let newGame = this.cloneState();
         for (let i = 0; i < 81; i++) {
-            newGame.board.cells[i].error = false;
+            if (newGame.board.cells[i].selected) {
+                newGame.board.cells[i].value = null;
+            }
         }
         this.setState(newGame);
     }
 
+    clearAllError() {
+        console.log('clearAllError');
+        let newGame = this.cloneState();
+        for (let i = 0; i < 81; i++) {
+            newGame.board.cells[i].error = false;
+        }
+        console.log(newGame);
+        this.setState(newGame);
+    }
+
     verifyBoard() {
+        console.log('verifyBoard');
         let newGame = this.cloneState();
         for (let i = 0; i < 81; i++) {
             const myValue = newGame.board.cells[i].value;
@@ -81,10 +100,14 @@ class Game extends React.Component {
 
     // Handle keypress event on a cell.
     handleKeyDown(e) {
-        console.log('keyCode = ' + e.keyCode);
+        console.log('handleKeyDown, keyCode = ' + e.keyCode);
         // Pressed 1-9
         if (e.keyCode >= 49 && e.keyCode <= 57) {
             this.fillSelectedWithValue(String.fromCharCode(e.keyCode));
+        }
+        // Press space
+        if (e.keyCode === 32) {
+            this.unfillSelected();
         }
     }
 
