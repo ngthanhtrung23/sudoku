@@ -1,11 +1,13 @@
 class CellData {
-    constructor(_row, _col) {
+    constructor(id) {
         this.value = null;
         this.cornerValues = new Set();
         this.centerValues = new Set();
+        this.selected = false;
 
-        this.row = _row;
-        this.col = _col;
+        this.row = ~~(id / 9);
+        this.col = id % 9;
+        this.id = id;
     }
 
     isRegionTop() {
@@ -39,7 +41,7 @@ class BoardData {
     constructor() {
         this.cells = [];
         for (let i = 0; i < 81; i++) {
-            this.cells.push(new CellData(~~(i / 9), i % 9));
+            this.cells.push(new CellData(i));
         }
     }
 }

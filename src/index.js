@@ -8,6 +8,7 @@ class Cell extends React.Component {
     render() {
         let classes = ['cell'];
 
+        // Add border based on region position.
         if (this.props.cell.isRegionTop()) {
             classes.push('region-top');
         }
@@ -15,6 +16,7 @@ class Cell extends React.Component {
             classes.push('region-left');
         }
 
+        // Add border based on board position.
         if (this.props.cell.isBoardLeft()) {
             classes.push('board-left');
         }
@@ -28,8 +30,18 @@ class Cell extends React.Component {
             classes.push('board-bottom');
         }
 
+        // Add highlighting class.
+        if (this.props.cell.selected) {
+            classes.push('selected');
+        }
+
         return (
-            <div class={classes.join(' ')}></div>
+            <div
+                className={classes.join(' ')}
+                onClick={this.props.onClick}
+                key={this.props.cell.id}
+            >
+            </div>
         );
     }
 }
@@ -39,6 +51,8 @@ class Board extends React.Component {
         return (
             <Cell
                 cell={this.props.board.cells[i]}
+                onClick={() => this.props.onClick(i)}
+                key={i}
             />
         );
     }
@@ -49,7 +63,7 @@ class Board extends React.Component {
             cells.push(this.renderCell(i));
         }
         return (
-            <div class="row">
+            <div className="row" key={startingCell}>
                 {cells}
             </div>
         );
@@ -74,11 +88,30 @@ class Game extends React.Component {
         this.state = new GameData();
     }
 
+    // Handle clicking on a cell.
+    handleClick(cellId) {
+        console.log(cellId);
+
+        // Clear all highlighting in the board.
+        let newGame = this.state;
+        for (let i = 0; i < 81; i++) {
+            newGame.board.cells[i].selected = false;
+        }
+
+        // Select new cell.
+        newGame.board.cells[cellId].selected = true;
+
+        this.setState(newGame);
+    }
+
     render() {
         return (
             <div>
                 <h1>Sudoku Tool</h1>
-                <Board board={this.state.board} />
+                <Board
+                    board={this.state.board}
+                    onClick={(i) => this.handleClick(i)}
+                />
             </div>
         );
     }
