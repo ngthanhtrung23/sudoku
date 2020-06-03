@@ -17,7 +17,12 @@ class Game extends React.Component {
         this.state = {
             board: new BoardModel(),
             control: new ControlModel(),
+            history: [],
+            historyId: 0,
         };
+        // Assumption:
+        // board is equivalent to history[historyId] at all times.
+        this.state.history.push(this.state.board.serialize());
     }
     
     cloneBoard() {
@@ -31,17 +36,59 @@ class Game extends React.Component {
     }
 
     assignNewBoard(board) {
+        const serialized = board.serialize();
+        let history = this.state.history;
+        let historyId = this.state.historyId;
+
+        // Only update history if the serialized new board is different.
+        // Thus, we ignore all selections and restrictions.
+        if (serialized !== this.state.history[historyId]) {
+            // Remove the rest of history.
+            // This clean data in case we do lots of undo, and then make a new move.
+            history = _.slice(history, 0, historyId + 1);
+
+            // Update history.
+            history.push(serialized);
+            historyId += 1;
+        }
+
         this.setState({
             board: board,
-            control: this.state.control,
-        })
+            history: history,
+            historyId: historyId,
+        });
+    }
+    
+    undo() {
+        if (this.state.historyId === 0) {
+            // Nothing to undo.
+            return;
+        }
+        let board = new BoardModel();
+        board.load(this.state.history[this.state.historyId - 1]);
+
+        this.setState({
+            board: board,
+            historyId: this.state.historyId - 1,
+        });
+    }
+
+    redo() {
+        if (this.state.historyId == this.state.history.length - 1) {
+            // Nothing to redo.
+            return;
+        }
+        let board = new BoardModel();
+        board.load(this.state.history[this.state.historyId + 1]);
+
+        this.setState({
+            board: board,
+            historyId: this.state.historyId + 1,
+        });
     }
 
     assignNewControl(control) {
-        this.setState({
-            board: this.state.board,
-            control: control,
-        });
+        this.setState({ control: control });
     }
 
     clearSelectionAndRestricted() {
@@ -212,6 +259,14 @@ class Game extends React.Component {
             case KeyCode.KEY_ESCAPE:
                 this.clearSelectionAndRestricted();
                 break;
+            case KeyCode.KEY_Z:
+            case KeyCode.KEY_U:
+                this.undo();
+                break;
+            case KeyCode.KEY_Y:
+            case KeyCode.KEY_R:
+                this.redo();
+                break;
             default:
         }
     }
@@ -256,6 +311,8 @@ class Game extends React.Component {
                         <Control
                             control={this.state.control}
                             onClickVerify={() => this.verifyBoard()}
+                            onClickUndo={() => this.undo()}
+                            onClickRedo={() => this.redo()}
                             onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
                             onToggleAntiKnight={() => this.handleToggleAntiKnight()}
                             onToggleAntiKing={() => this.handleToggleAntiKing()}

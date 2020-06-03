@@ -8,6 +8,31 @@ class BoardModel {
         }
     }
 
+    serialize() {
+        let result = [];
+        this.cells.forEach((cell) => {
+            result.push({
+                value: cell.value,
+                cornerValues: Array.from(cell.cornerValues),
+                centerValues: Array.from(cell.centerValues),
+            });
+        });
+        return JSON.stringify(result);
+    }
+
+    load(serialized) {
+        this.clearAllErrors();
+        this.clearAllRestricteds();
+        this.clearAllSelections();
+
+        let obj = JSON.parse(serialized);
+        for (let i = 0; i < 81; i++) {
+            this.cells[i].value = obj[i].value;
+            this.cells[i].cornerValues = new Set(obj[i].cornerValues);
+            this.cells[i].centerValues = new Set(obj[i].centerValues);
+        }
+    }
+
     /** Check if a (row, col) is within the board. */
     isInside(row, col) {
         return 0 <= row && row < 9 && 0 <= col && col < 9;

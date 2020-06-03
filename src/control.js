@@ -6,9 +6,25 @@ class Control extends React.Component {
     render() {
         return (
             <Form>
-                <Button onClick={this.props.onClickVerify}>
-                    Verify
-                </Button>
+                <div className="">
+                    <Button onClick={this.props.onClickVerify}>
+                        Verify
+                    </Button>
+                    &nbsp;
+                    <Button
+                        onClick={this.props.onClickUndo}
+                        className="btn-secondary"
+                    >
+                        Undo
+                    </Button>
+                    &nbsp;
+                    <Button
+                        onClick={this.props.onClickRedo}
+                        className="btn-secondary"
+                    >
+                        Redo
+                    </Button>
+                </div>
                 <hr/>
                 <h4>Display Options</h4>
                 <Form.Check
