@@ -19,6 +19,7 @@ class Game extends React.Component {
             control: new ControlModel(),
             history: [],
             historyId: 0,
+            isMouseDown: false,
         };
         // Assumption:
         // board is equivalent to history[historyId] at all times.
@@ -74,7 +75,7 @@ class Game extends React.Component {
     }
 
     redo() {
-        if (this.state.historyId == this.state.history.length - 1) {
+        if (this.state.historyId >= this.state.history.length - 1) {
             // Nothing to redo.
             return;
         }
@@ -124,6 +125,28 @@ class Game extends React.Component {
     handleClick(e, cellId) {
         console.log('handleClick ' + cellId);
         this.select(cellId, !e.metaKey);
+    }
+
+    // Handle mousedown on a cell.
+    handleMouseDown(e, cellId) {
+        console.log('handleMouseDown ' + cellId);
+        this.setState({isMouseDown: true});
+
+        this.select(cellId, !e.metaKey);
+    }
+
+    // Handle mouseover a cell.
+    handleMouseOver(cellId) {
+        if (!this.state.isMouseDown) {
+            return;
+        }
+        console.log('handleMouseOver ' + cellId);
+        this.select(cellId, false);
+    }
+
+    handleMouseUp() {
+        console.log('handleMouseUp');
+        this.setState({isMouseDown: false});
     }
 
     setValueOfSelectedCells(newValue) {
@@ -298,6 +321,7 @@ class Game extends React.Component {
                 onKeyDown={(e) => this.handleKeyDown(e)}
                 tabIndex="0"
                 className="container"
+                onMouseUp={() => this.handleMouseUp()}
             >
                 <h1>Sudoku Tool</h1>
                 <div className="row">
@@ -305,6 +329,8 @@ class Game extends React.Component {
                         <Board
                             board={this.state.board}
                             onClick={(e, i) => this.handleClick(e, i)}
+                            onMouseDown={(e, i) => this.handleMouseDown(e, i)}
+                            onMouseOver={(i) => this.handleMouseOver(i)}
                         />
                     </div>
                     <div className="col-sm">

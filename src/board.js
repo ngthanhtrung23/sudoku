@@ -78,6 +78,8 @@ class Cell extends React.Component {
             <div
                 className={classes.join(' ')}
                 onClick={this.props.onClick}
+                onMouseDown={this.props.onMouseDown}
+                onMouseOver={this.props.onMouseOver}
                 key={this.props.cell.id}
             >
                 {this.renderCellMainValue()}
@@ -94,6 +96,8 @@ class Board extends React.Component {
             <Cell
                 cell={this.props.board.cells[i]}
                 onClick={(e) => this.props.onClick(e, i)}
+                onMouseDown={(e) => this.props.onMouseDown(e, i)}
+                onMouseOver={() => this.props.onMouseOver(i)}
                 key={i}
             />
         );
