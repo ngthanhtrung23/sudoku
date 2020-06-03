@@ -64,10 +64,9 @@ class Cell extends React.Component {
         }
 
         // Add highlighting class.
-        if (this.props.cell.selected) {
+        if (this.props.cell.selected || (this.props.highlightMatching && this.props.cell.value === this.props.highlightMatching)) {
             classes.push('selected');
-        }
-        if (this.props.cell.restricted) {
+        } else if (this.props.cell.restricted) {
             classes.push('restricted');
         }
         if (this.props.cell.error) {
@@ -99,6 +98,7 @@ class Board extends React.Component {
                 onMouseDown={(e) => this.props.onMouseDown(e, i)}
                 onMouseOver={() => this.props.onMouseOver(i)}
                 key={i}
+                highlightMatching={this.props.highlightMatching}
             />
         );
     }

@@ -2,6 +2,7 @@ class ControlModel {
     constructor() {
         this.displayOptions = {
             highlightRestricted: true,
+            highlightMatchingNumbers: false,
         };
         this.gamePlay = {
             antiKnight: false,
@@ -11,6 +12,10 @@ class ControlModel {
 
     toggleHighlightRestricted() {
         this.displayOptions.highlightRestricted = !this.displayOptions.highlightRestricted;
+    }
+
+    toggleHighlightMatchingNumbers() {
+        this.displayOptions.highlightMatchingNumbers = !this.displayOptions.highlightMatchingNumbers;
     }
 
     toggleAntiKnight() {

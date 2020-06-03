@@ -34,6 +34,13 @@ class Control extends React.Component {
                     checked={this.props.control.displayOptions.highlightRestricted}
                     onChange={this.props.onToggleHighlightRestricted}
                 />
+                <Form.Check
+                    type='checkbox'
+                    id='checkbox-highlight-matching-numbers'
+                    label='Highlight matching numbers'
+                    checked={this.props.control.displayOptions.highlightMatchingNumbers}
+                    onChange={this.props.onToggleHighlightMatchingNumbers}
+                />
                 <hr/>
                 <h4>Game Play</h4>
                 <Form.Check

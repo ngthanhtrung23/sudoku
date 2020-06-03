@@ -20,6 +20,7 @@ class Game extends React.Component {
             history: [],
             historyId: 0,
             isMouseDown: false,
+            highlightMatching: null,
         };
         // Assumption:
         // board is equivalent to history[historyId] at all times.
@@ -100,6 +101,7 @@ class Game extends React.Component {
         newBoard.clearAllRestricteds();
 
         this.assignNewBoard(newBoard);
+        this.setState({highlightMatching: null});
     }
 
     // Select a cell.
@@ -119,6 +121,19 @@ class Game extends React.Component {
         }
 
         this.assignNewBoard(newBoard);
+
+        if (this.state.control.displayOptions.highlightMatchingNumbers) {
+            const selectedValues = new Set(
+                newBoard.cells
+                    .filter((cell) => cell.selected)
+                    .filter((cell) => cell.value)
+                    .map((cell) => cell.value)
+            );
+            if (selectedValues.size === 1) {
+                const selectedValue = selectedValues.values().next().value;
+                this.setState({highlightMatching: selectedValue});
+            }
+        }
     }
 
     // Handle clicking on a cell.
@@ -301,6 +316,13 @@ class Game extends React.Component {
         this.assignNewControl(newControl);
     }
 
+    handleToggleHighlightMatchingNumbers() {
+        console.log('handleToggleHighlightMatchingNumbers');
+        let newControl = this.cloneControl();
+        newControl.toggleHighlightMatchingNumbers();
+        this.assignNewControl(newControl);
+    }
+
     handleToggleAntiKnight() {
         console.log('handleToggleAntiKnight');
         let newControl = this.cloneControl();
@@ -331,6 +353,7 @@ class Game extends React.Component {
                             onClick={(e, i) => this.handleClick(e, i)}
                             onMouseDown={(e, i) => this.handleMouseDown(e, i)}
                             onMouseOver={(i) => this.handleMouseOver(i)}
+                            highlightMatching={this.state.highlightMatching}
                         />
                     </div>
                     <div className="col-sm">
@@ -340,6 +363,7 @@ class Game extends React.Component {
                             onClickUndo={() => this.undo()}
                             onClickRedo={() => this.redo()}
                             onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
+                            onToggleHighlightMatchingNumbers={() => this.handleToggleHighlightMatchingNumbers()}
                             onToggleAntiKnight={() => this.handleToggleAntiKnight()}
                             onToggleAntiKing={() => this.handleToggleAntiKing()}
                         />
