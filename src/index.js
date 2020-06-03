@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import * as KeyCode from 'keycode-js';
 
-import { Board } from './board.js';
-import { Control } from './control.js';
+import Board from './board.js';
+import Control from './control.js';
 import BoardModel from './models/boardModel.js';
 import ControlModel from './models/controlModel.js';
 
-import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 class Game extends React.Component {
     constructor(props) {
@@ -25,11 +25,23 @@ class Game extends React.Component {
         return newBoard;
     }
 
+    cloneControl() {
+        let newControl = _.clone(this.state.control, true);
+        return newControl;
+    }
+
     assignNewBoard(board) {
         this.setState({
             board: board,
             control: this.state.control,
         })
+    }
+
+    assignNewControl(control) {
+        this.setState({
+            board: this.state.board,
+            control: control,
+        });
     }
 
     clearSelectionAndRestricted() {
@@ -49,7 +61,10 @@ class Game extends React.Component {
         this.clearSelectionAndRestricted();
 
         newBoard.setSelected(cellId);
-        newBoard.setRestricted(cellId);
+
+        if (this.state.control.displayOptions.highlightRestricted) {
+            newBoard.setRestricted(cellId);
+        }
 
         this.assignNewBoard(newBoard);
     }
@@ -146,6 +161,13 @@ class Game extends React.Component {
         }
     }
 
+    handleToggleHighlightRestricted() {
+        console.log('handleToggleHighlightRestricted');
+        let newControl = this.cloneControl();
+        newControl.toggleHighlightRestricted();
+        this.assignNewControl(newControl);
+    }
+
     render() {
         return (
             <div
@@ -163,7 +185,9 @@ class Game extends React.Component {
                     </div>
                     <div className="col-sm">
                         <Control
+                            control={this.state.control}
                             onClickVerify={() => this.verifyBoard()}
+                            onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
                         />
                     </div>
                 </div>

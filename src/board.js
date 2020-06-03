@@ -96,4 +96,4 @@ class Board extends React.Component {
     }
 }
 
-export { Board };
+export default Board;

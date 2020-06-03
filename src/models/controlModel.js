@@ -1,6 +1,12 @@
 class ControlModel {
     constructor() {
-        this.highlightRestricted = true;
+        this.displayOptions = {
+            highlightRestricted: true,
+        };
+    }
+
+    toggleHighlightRestricted() {
+        this.displayOptions.highlightRestricted = !this.displayOptions.highlightRestricted;
     }
 }
 
