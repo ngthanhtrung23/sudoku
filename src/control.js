@@ -27,6 +27,13 @@ class Control extends React.Component {
                     checked={this.props.control.gamePlay.antiKnight}
                     onChange={this.props.onToggleAntiKnight}
                 />
+                <Form.Check
+                    type='checkbox'
+                    id='checkbox-anti-king'
+                    label='Anti King'
+                    checked={this.props.control.gamePlay.antiKing}
+                    onChange={this.props.onToggleAntiKing}
+                />
             </Form>
         );
     }

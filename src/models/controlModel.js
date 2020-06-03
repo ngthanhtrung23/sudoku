@@ -5,6 +5,7 @@ class ControlModel {
         };
         this.gamePlay = {
             antiKnight: false,
+            antiKing: false,
         };
     }
 
@@ -14,6 +15,10 @@ class ControlModel {
 
     toggleAntiKnight() {
         this.gamePlay.antiKnight = !this.gamePlay.antiKnight;
+    }
+
+    toggleAntiKing() {
+        this.gamePlay.antiKing = !this.gamePlay.antiKing;
     }
 }
 

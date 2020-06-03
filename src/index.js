@@ -176,6 +176,13 @@ class Game extends React.Component {
         this.assignNewControl(newControl);
     }
 
+    handleToggleAntiKing() {
+        console.log('handleToggleAntiKing');
+        let newControl = this.cloneControl();
+        newControl.toggleAntiKing();
+        this.assignNewControl(newControl);
+    }
+
     render() {
         return (
             <div
@@ -197,6 +204,7 @@ class Game extends React.Component {
                             onClickVerify={() => this.verifyBoard()}
                             onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
                             onToggleAntiKnight={() => this.handleToggleAntiKnight()}
+                            onToggleAntiKing={() => this.handleToggleAntiKing()}
                         />
                     </div>
                 </div>

@@ -72,6 +72,19 @@ class BoardModel {
             }
         }
 
+        // Anti-king
+        if (gamePlay.antiKing) {
+            for (let di = -1; di <= 1; di++) {
+                for (let dj = -1; dj <= 1; dj++) {
+                    const row2 = row + di;
+                    const col2 = col + dj;
+                    if (this.isInside(row2, col2)) {
+                        result.add(this.toCellId(row2, col2));
+                    }
+                }
+            }
+        }
+
         // Do not include the same cell.
         result.delete(cellId);
         return result;
