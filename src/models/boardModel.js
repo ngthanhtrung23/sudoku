@@ -110,10 +110,22 @@ class BoardModel {
         this.cells[cellId].selected = true;
     }
 
-    setRestricted(cellId, gamePlay) {
-        this.getVisibleCells(cellId, gamePlay).forEach((neighborId) => {
-            this.cells[neighborId].restricted = true;
-        });
+    setRestricted(gamePlay) {
+        let restricted = null;
+
+        for (let id = 0; id < 81; id++) {
+            if (this.cells[id].selected) {
+                if (restricted === null) {
+                    restricted = this.getVisibleCells(id, gamePlay);
+                } else {
+                    restricted = new Set([...this.getVisibleCells(id, gamePlay)].filter(x => restricted.has(x)));
+                }
+            }
+        }
+
+        restricted.forEach((cellId) => {
+            this.cells[cellId].restricted = true;
+        })
     }
 
     setErrors(cellIds) {

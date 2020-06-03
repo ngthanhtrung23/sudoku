@@ -55,24 +55,28 @@ class Game extends React.Component {
     }
 
     // Select a cell.
-    select(cellId) {
+    select(cellId, clearSelection = true) {
         console.log('select ' + cellId);
         let newBoard = this.cloneBoard();
-        this.clearSelectionAndRestricted();
+        if (clearSelection) {
+            this.clearSelectionAndRestricted();
+        } else {
+            newBoard.clearAllRestricteds();
+        }
 
         newBoard.setSelected(cellId);
 
         if (this.state.control.displayOptions.highlightRestricted) {
-            newBoard.setRestricted(cellId, this.state.control.gamePlay);
+            newBoard.setRestricted(this.state.control.gamePlay);
         }
 
         this.assignNewBoard(newBoard);
     }
 
     // Handle clicking on a cell.
-    handleClick(cellId) {
+    handleClick(e, cellId) {
         console.log('handleClick ' + cellId);
-        this.select(cellId);
+        this.select(cellId, !e.metaKey);
     }
 
     setValueToSelectedCells(newValue) {
@@ -223,7 +227,7 @@ class Game extends React.Component {
                     <div className="col-sm">
                         <Board
                             board={this.state.board}
-                            onClick={(i) => this.handleClick(i)}
+                            onClick={(e, i) => this.handleClick(e, i)}
                         />
                     </div>
                     <div className="col-sm">

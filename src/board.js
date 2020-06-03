@@ -79,7 +79,7 @@ class Board extends React.Component {
         return (
             <Cell
                 cell={this.props.board.cells[i]}
-                onClick={() => this.props.onClick(i)}
+                onClick={(e) => this.props.onClick(e, i)}
                 key={i}
             />
         );
