@@ -5,6 +5,17 @@ import './index.css';
 import { GameData } from './data.js';
 
 class Cell extends React.Component {
+    renderCellMainValue() {
+        if (this.props.cell.value) {
+            return (
+                <span className="cell-main-value">
+                    {this.props.cell.value}
+                </span>
+            );
+        }
+        return;
+    }
+
     render() {
         let classes = ['cell'];
 
@@ -41,6 +52,7 @@ class Cell extends React.Component {
                 onClick={this.props.onClick}
                 key={this.props.cell.id}
             >
+                {this.renderCellMainValue()}
             </div>
         );
     }
@@ -90,8 +102,6 @@ class Game extends React.Component {
 
     // Handle clicking on a cell.
     handleClick(cellId) {
-        console.log(cellId);
-
         // Clear all highlighting in the board.
         let newGame = this.state;
         for (let i = 0; i < 81; i++) {
@@ -104,9 +114,31 @@ class Game extends React.Component {
         this.setState(newGame);
     }
 
+    fillSelectedWithValue(newValue) {
+        let newGame = this.state;
+        for (let i = 0; i < 81; i++) {
+            if (newGame.board.cells[i].selected) {
+                newGame.board.cells[i].value = newValue;
+            }
+        }
+        this.setState(newGame);
+    }
+
+    // Handle keypress event on a cell.
+    handleKeyDown(e) {
+        console.log('keyCode = ' + e.keyCode);
+        // Pressed 1-9
+        if (e.keyCode >= 49 && e.keyCode <= 57) {
+            this.fillSelectedWithValue(String.fromCharCode(e.keyCode));
+        }
+    }
+
     render() {
         return (
-            <div>
+            <div
+                onKeyDown={(e) => this.handleKeyDown(e)}
+                tabIndex="0"
+            >
                 <h1>Sudoku Tool</h1>
                 <Board
                     board={this.state.board}
