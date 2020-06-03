@@ -159,10 +159,16 @@ class BoardModel {
         });
     }
 
-    setValueOfSelectedCells(newValue) {
+    setValueOfSelectedCells(newValue, gamePlay, autoCleanup = false) {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.value = newValue;
+                if (autoCleanup) {
+                    this.getVisibleCells(cell.id, gamePlay).forEach((id) => {
+                        this.cells[id].cornerValues.delete(newValue);
+                        this.cells[id].centerValues.delete(newValue);
+                    });
+                }
             }
         });
     }

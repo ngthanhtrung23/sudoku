@@ -169,7 +169,10 @@ class Game extends React.Component {
         this.clearAllError();
 
         let newBoard = this.cloneBoard();
-        newBoard.setValueOfSelectedCells(newValue);
+        newBoard.setValueOfSelectedCells(
+            newValue,
+            this.state.control.gamePlay,
+            this.state.control.displayOptions.autoCleanUp);
 
         this.assignNewBoard(newBoard);
     }
@@ -323,6 +326,13 @@ class Game extends React.Component {
         this.assignNewControl(newControl);
     }
 
+    handleToggleAutoCleanUp() {
+        console.log('handleToggleAutoCleanUp');
+        let newControl = this.cloneControl();
+        newControl.toggleAutoCleanUp();
+        this.assignNewControl(newControl);
+    }
+
     handleToggleAntiKnight() {
         console.log('handleToggleAntiKnight');
         let newControl = this.cloneControl();
@@ -364,6 +374,7 @@ class Game extends React.Component {
                             onClickRedo={() => this.redo()}
                             onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
                             onToggleHighlightMatchingNumbers={() => this.handleToggleHighlightMatchingNumbers()}
+                            onToggleAutoCleanUp={() => this.handleToggleAutoCleanUp()}
                             onToggleAntiKnight={() => this.handleToggleAntiKnight()}
                             onToggleAntiKing={() => this.handleToggleAntiKing()}
                         />

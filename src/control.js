@@ -41,6 +41,13 @@ class Control extends React.Component {
                     checked={this.props.control.displayOptions.highlightMatchingNumbers}
                     onChange={this.props.onToggleHighlightMatchingNumbers}
                 />
+                <Form.Check
+                    type='checkbox'
+                    id='checkbox-auto-cleanup'
+                    label='Auto Cleanup corner & center values'
+                    checked={this.props.control.displayOptions.autoCleanUp}
+                    onChange={this.props.onToggleAutoCleanUp}
+                />
                 <hr/>
                 <h4>Game Play</h4>
                 <Form.Check

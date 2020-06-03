@@ -3,6 +3,7 @@ class ControlModel {
         this.displayOptions = {
             highlightRestricted: true,
             highlightMatchingNumbers: false,
+            autoCleanUp: false,
         };
         this.gamePlay = {
             antiKnight: false,
@@ -16,6 +17,10 @@ class ControlModel {
 
     toggleHighlightMatchingNumbers() {
         this.displayOptions.highlightMatchingNumbers = !this.displayOptions.highlightMatchingNumbers;
+    }
+
+    toggleAutoCleanUp() {
+        this.displayOptions.autoCleanUp = !this.displayOptions.autoCleanUp;
     }
 
     toggleAntiKnight() {
