@@ -11,7 +11,10 @@
     -khtml-user-select: none;
 }
 .cell.selected {
-    background-color: rgb(255, 250, 0);
+    background-color: rgb(255, 255, 0);
+}
+.cell.matching {
+    background-color: rgb(255, 150, 0);
 }
 .cell.restricted {
     background-color: rgba(255, 190, 0, 0.5);

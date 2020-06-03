@@ -64,8 +64,10 @@ class Cell extends React.Component {
         }
 
         // Add highlighting class.
-        if (this.props.cell.selected || (this.props.highlightMatching && this.props.cell.value === this.props.highlightMatching)) {
+        if (this.props.cell.selected) {
             classes.push('selected');
+        } else if (this.props.highlightMatching && this.props.cell.value === this.props.highlightMatching) {
+            classes.push('matching');
         } else if (this.props.cell.restricted) {
             classes.push('restricted');
         }
