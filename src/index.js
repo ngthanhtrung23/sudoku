@@ -95,6 +95,23 @@ class Game extends React.Component {
         this.assignNewBoard(newBoard);
     }
 
+    toggleCornerValuesToSelectedCells(newValue) {
+        console.log('toggleCornerValuesToSelectedCells ' + newValue);
+
+        let newBoard = this.cloneBoard();
+        newBoard.toggleCornerValuesToSelectedCells(newValue);
+
+        this.assignNewBoard(newBoard);
+    }
+
+    clearCornerValuesOfSelectedCells() {
+        console.log('clearCornerValuesOfSelectedCells');
+        
+        let newBoard = this.cloneBoard();
+        newBoard.clearCornerValuesOfSelectedCells();
+        this.assignNewBoard(newBoard);
+    }
+
     clearAllError() {
         console.log('clearAllError');
         let newBoard = this.cloneBoard();
@@ -137,12 +154,22 @@ class Game extends React.Component {
 
         // Pressed 1-9
         if (e.keyCode >= KeyCode.KEY_1 && e.keyCode <= KeyCode.KEY_9) {
-            this.setValueToSelectedCells(String.fromCharCode(e.keyCode));
+            const value = String.fromCharCode(e.keyCode);
+            if (isShift) {
+                this.toggleCornerValuesToSelectedCells(value)
+            } else {
+                this.setValueToSelectedCells(value);
+            }
         }
 
         switch (e.keyCode) {
             case KeyCode.KEY_SPACE:
                 this.unsetSelectedCells();
+                break;
+            case KeyCode.KEY_BACK_SPACE:
+                this.unsetSelectedCells();
+                this.clearCornerValuesOfSelectedCells();
+                e.preventDefault();
                 break;
             case KeyCode.KEY_DOWN:
                 this.moveSelection(+1, 0);

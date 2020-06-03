@@ -12,6 +12,19 @@ class Cell extends React.Component {
         return;
     }
 
+    renderCellCornerValues() {
+        if (this.props.cell.value) {
+            // Do not show corner values, if cell is filled.
+            return;
+        }
+        const sortedValues = Array.from(this.props.cell.cornerValues).sort();
+        return (
+            <span className="cell-corner-value">
+                {sortedValues}
+            </span>
+        );
+    }
+
     render() {
         let classes = ['cell'];
 
@@ -55,6 +68,7 @@ class Cell extends React.Component {
                 key={this.props.cell.id}
             >
                 {this.renderCellMainValue()}
+                {this.renderCellCornerValues()}
             </div>
         );
     }

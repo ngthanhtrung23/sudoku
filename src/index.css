@@ -25,6 +25,12 @@
     font-size: 30px;
 }
 
+.cell-corner-value {
+    position: absolute;
+    font-size: 11px;
+    left: 2%;
+}
+
 .region-left {
     border-left: 3px solid #000;
 }
