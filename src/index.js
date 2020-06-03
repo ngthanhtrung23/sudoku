@@ -5,7 +5,8 @@ import * as KeyCode from 'keycode-js';
 
 import { Board } from './board.js';
 import { Control } from './control.js';
-import { ControlData, GameData } from './data.js';
+import BoardModel from './models/boardModel.js';
+import ControlModel from './models/controlModel.js';
 
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,55 +15,43 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            game: new GameData(),
-            control: new ControlData(),
+            board: new BoardModel(),
+            control: new ControlModel(),
         };
     }
     
-    cloneGame() {
-        let newGame = _.clone(this.state.game, true);
-        return newGame;
+    cloneBoard() {
+        let newBoard = _.clone(this.state.board, true);
+        return newBoard;
     }
 
-    assignNewGame(game) {
+    assignNewBoard(board) {
         this.setState({
-            game: game,
+            board: board,
             control: this.state.control,
         })
     }
 
     clearSelectionAndRestricted() {
         console.log('clearSelectionAndRestricted');
-        let newGame = this.cloneGame();
+        let newBoard = this.cloneBoard();
 
-        // Clear all highlighting in the board.
-        for (let i = 0; i < 81; i++) {
-            newGame.board.cells[i].selected = false;
-        }
+        newBoard.clearAllSelections();
+        newBoard.clearAllRestricteds();
 
-        // Clear all previously restricted cells.
-        for (let i = 0; i < 81; i++) {
-            newGame.board.cells[i].restricted = false;
-        }
-
-        this.assignNewGame(newGame);
+        this.assignNewBoard(newBoard);
     }
 
     // Select a cell.
     select(cellId) {
         console.log('select ' + cellId);
-        let newGame = this.cloneGame();
+        let newBoard = this.cloneBoard();
         this.clearSelectionAndRestricted();
 
-        // Select new cell.
-        newGame.board.cells[cellId].selected = true;
+        newBoard.setSelected(cellId);
+        newBoard.setRestricted(cellId);
 
-        // Update restricted cells.
-        newGame.getVisibleCells(cellId).forEach((id) => {
-            newGame.board.cells[id].restricted = true;
-        });
-
-        this.assignNewGame(newGame);
+        this.assignNewBoard(newBoard);
     }
 
     // Handle clicking on a cell.
@@ -71,58 +60,41 @@ class Game extends React.Component {
         this.select(cellId);
     }
 
-    fillSelectedWithValue(newValue) {
-        console.log('fillSelectedWithValue ' + newValue);
+    setValueToSelectedCells(newValue) {
+        console.log('setValueToSelectedCells ' + newValue);
         this.clearAllError();
-        let newGame = this.cloneGame();
-        for (let i = 0; i < 81; i++) {
-            if (newGame.board.cells[i].selected) {
-                newGame.board.cells[i].value = newValue;
-            }
-        }
-        this.assignNewGame(newGame);
+
+        let newBoard = this.cloneBoard();
+        newBoard.setValueToSelectedCells(newValue);
+
+        this.assignNewBoard(newBoard);
     }
 
-    unfillSelected() {
-        console.log('unfillSelected');
+    unsetSelectedCells() {
+        console.log('unsetSelectedCells');
         this.clearAllError();
-        let newGame = this.cloneGame();
-        for (let i = 0; i < 81; i++) {
-            if (newGame.board.cells[i].selected) {
-                newGame.board.cells[i].value = null;
-            }
-        }
-        this.assignNewGame(newGame);
+
+        let newBoard = this.cloneBoard();
+        newBoard.unsetSelectedCells();
+
+        this.assignNewBoard(newBoard);
     }
 
     clearAllError() {
         console.log('clearAllError');
-        let newGame = this.cloneGame();
-        for (let i = 0; i < 81; i++) {
-            newGame.board.cells[i].error = false;
-        }
-        this.assignNewGame(newGame);
+        let newBoard = this.cloneBoard();
+        newBoard.clearAllErrors();
+        this.assignNewBoard(newBoard);
     }
 
     verifyBoard() {
         console.log('verifyBoard');
-        let newGame = this.cloneGame();
-        let hasError = false;
-        for (let i = 0; i < 81; i++) {
-            const myValue = newGame.board.cells[i].value;
-            if (myValue) {
-                newGame.getVisibleCells(i).forEach((neighborId) => {
-                    if (myValue === newGame.board.cells[neighborId].value) {
-                        newGame.board.cells[i].error = true;
-                        newGame.board.cells[neighborId].error = true;
-                        hasError = true;
-                    }
-                })
-            }
-        }
-        this.assignNewGame(newGame);
+        let newBoard = this.cloneBoard();
+        let invalidCellIds = newBoard.getInvalidCellIds();
+        newBoard.setErrors(invalidCellIds);
+        this.assignNewBoard(newBoard);
 
-        alert(hasError ? 'Error found :(' : 'LGTM!');
+        alert(invalidCellIds.length > 0 ? 'Error found :(' : 'LGTM!');
     }
 
     // Move selected cell in direction (d_row, d_col).
@@ -130,15 +102,15 @@ class Game extends React.Component {
     moveSelection(d_row, d_col) {
         let r = 0, c = 0;  // by default, assume that we selected (0, 0).
         for (let i = 0; i < 81; i++) {
-            if (this.state.game.board.cells[i].selected) {
+            if (this.state.board.cells[i].selected) {
                 console.log(this.state);
-                [r, c] = this.state.game.toRowCol(i);
+                [r, c] = this.state.board.toRowCol(i);
                 break;
             }
         }
         r = (r + d_row + 9) % 9;
         c = (c + d_col + 9) % 9;
-        this.select(this.state.game.toCellId(r, c));
+        this.select(this.state.board.toCellId(r, c));
     }
 
     // Handle keypress event on a cell.
@@ -149,12 +121,12 @@ class Game extends React.Component {
 
         // Pressed 1-9
         if (e.keyCode >= KeyCode.KEY_1 && e.keyCode <= KeyCode.KEY_9) {
-            this.fillSelectedWithValue(String.fromCharCode(e.keyCode));
+            this.setValueToSelectedCells(String.fromCharCode(e.keyCode));
         }
 
         switch (e.keyCode) {
             case KeyCode.KEY_SPACE:
-                this.unfillSelected();
+                this.unsetSelectedCells();
                 break;
             case KeyCode.KEY_DOWN:
                 this.moveSelection(+1, 0);
@@ -185,7 +157,7 @@ class Game extends React.Component {
                 <div className="row">
                     <div className="col-sm">
                         <Board
-                            board={this.state.game.board}
+                            board={this.state.board}
                             onClick={(i) => this.handleClick(i)}
                         />
                     </div>
