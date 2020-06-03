@@ -57,7 +57,6 @@ class ControlData {
 class GameData {
     constructor() {
         this.board = new BoardData();
-        this.control = new ControlData();
     }
 
     /** Check if a (row, col) is within the board. */
@@ -112,4 +111,4 @@ class GameData {
     }
 }
 
-export { CellData, BoardData, GameData };
+export { CellData, BoardData, GameData, ControlData };
