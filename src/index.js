@@ -79,12 +79,12 @@ class Game extends React.Component {
         this.select(cellId, !e.metaKey);
     }
 
-    setValueToSelectedCells(newValue) {
-        console.log('setValueToSelectedCells ' + newValue);
+    setValueOfSelectedCells(newValue) {
+        console.log('setValueOfSelectedCells ' + newValue);
         this.clearAllError();
 
         let newBoard = this.cloneBoard();
-        newBoard.setValueToSelectedCells(newValue);
+        newBoard.setValueOfSelectedCells(newValue);
 
         this.assignNewBoard(newBoard);
     }
@@ -99,11 +99,11 @@ class Game extends React.Component {
         this.assignNewBoard(newBoard);
     }
 
-    toggleCornerValuesToSelectedCells(newValue) {
-        console.log('toggleCornerValuesToSelectedCells ' + newValue);
+    toggleCornerValuesOfSelectedCells(newValue) {
+        console.log('toggleCornerValuesOfSelectedCells ' + newValue);
 
         let newBoard = this.cloneBoard();
-        newBoard.toggleCornerValuesToSelectedCells(newValue);
+        newBoard.toggleCornerValuesOfSelectedCells(newValue);
 
         this.assignNewBoard(newBoard);
     }
@@ -160,9 +160,9 @@ class Game extends React.Component {
         if (e.keyCode >= KeyCode.KEY_1 && e.keyCode <= KeyCode.KEY_9) {
             const value = String.fromCharCode(e.keyCode);
             if (isShift) {
-                this.toggleCornerValuesToSelectedCells(value)
+                this.toggleCornerValuesOfSelectedCells(value)
             } else {
-                this.setValueToSelectedCells(value);
+                this.setValueOfSelectedCells(value);
             }
         }
 

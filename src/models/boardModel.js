@@ -134,7 +134,7 @@ class BoardModel {
         });
     }
 
-    setValueToSelectedCells(newValue) {
+    setValueOfSelectedCells(newValue) {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.value = newValue;
@@ -150,7 +150,7 @@ class BoardModel {
         });
     }
 
-    toggleCornerValuesToSelectedCells(value) {
+    toggleCornerValuesOfSelectedCells(value) {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 if (cell.cornerValues.has(value)) {

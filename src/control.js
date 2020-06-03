@@ -14,7 +14,7 @@ class Control extends React.Component {
                 <Form.Check
                     type='checkbox'
                     id='checkbox-highlight-restricted'
-                    label='Highlight restricted'
+                    label='Highlight restricted cells'
                     checked={this.props.control.displayOptions.highlightRestricted}
                     onChange={this.props.onToggleHighlightRestricted}
                 />
