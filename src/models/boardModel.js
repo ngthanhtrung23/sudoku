@@ -170,6 +170,26 @@ class BoardModel {
         })
     }
 
+    toggleCenterValuesOfSelectedCells(value) {
+        this.cells.forEach((cell) => {
+            if (cell.selected) {
+                if (cell.centerValues.has(value)) {
+                    cell.centerValues.delete(value);
+                } else {
+                    cell.centerValues.add(value);
+                }
+            }
+        });
+    }
+
+    clearCenterValuesOfSelectedCells(value) {
+        this.cells.forEach((cell) => {
+            if (cell.selected) {
+                cell.centerValues.clear();
+            }
+        });
+    }
+
     clearAllSelections() {
         this.cells.forEach((cell) => {
             cell.selected = false;

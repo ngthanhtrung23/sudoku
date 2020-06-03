@@ -116,6 +116,23 @@ class Game extends React.Component {
         this.assignNewBoard(newBoard);
     }
 
+    toggleCenterValuesOfSelectedCells(newValue) {
+        console.log('toggleCenterValuesOfSelectedCells ' + newValue);
+
+        let newBoard = this.cloneBoard();
+        newBoard.toggleCenterValuesOfSelectedCells(newValue);
+
+        this.assignNewBoard(newBoard);
+    }
+
+    clearCenterValuesOfSelectedCells() {
+        console.log('clearCenterValuesOfSelectedCells');
+
+        let newBoard = this.cloneBoard();
+        newBoard.clearCenterValuesOfSelectedCells();
+        this.assignNewBoard(newBoard);
+    }
+
     clearAllError() {
         console.log('clearAllError');
         let newBoard = this.cloneBoard();
@@ -155,12 +172,16 @@ class Game extends React.Component {
         console.log('handleKeyDown, keyCode = ' + e.keyCode);
 
         let isShift = !!e.shiftKey;
+        let isMeta = !!e.metaKey;
 
         // Pressed 1-9
         if (e.keyCode >= KeyCode.KEY_1 && e.keyCode <= KeyCode.KEY_9) {
             const value = String.fromCharCode(e.keyCode);
             if (isShift) {
                 this.toggleCornerValuesOfSelectedCells(value)
+            } else if (isMeta) {
+                this.toggleCenterValuesOfSelectedCells(value);
+                e.preventDefault();
             } else {
                 this.setValueOfSelectedCells(value);
             }
@@ -173,6 +194,7 @@ class Game extends React.Component {
             case KeyCode.KEY_BACK_SPACE:
                 this.unsetSelectedCells();
                 this.clearCornerValuesOfSelectedCells();
+                this.clearCenterValuesOfSelectedCells();
                 e.preventDefault();
                 break;
             case KeyCode.KEY_DOWN:

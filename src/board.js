@@ -25,6 +25,19 @@ class Cell extends React.Component {
         );
     }
 
+    renderCellCenterValues() {
+        if (this.props.cell.value) {
+            // Do not show center values, if cell is filled.
+            return;
+        }
+        const sortedValues = Array.from(this.props.cell.centerValues).sort();
+        return (
+            <span className="cell-center-value">
+                {sortedValues}
+            </span>
+        );
+    }
+
     render() {
         let classes = ['cell'];
 
@@ -69,6 +82,7 @@ class Cell extends React.Component {
             >
                 {this.renderCellMainValue()}
                 {this.renderCellCornerValues()}
+                {this.renderCellCenterValues()}
             </div>
         );
     }

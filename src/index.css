@@ -31,6 +31,14 @@
     left: 2%;
 }
 
+.cell-center-value {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+}
+
 .region-left {
     border-left: 3px solid #000;
 }
