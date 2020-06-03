@@ -36,7 +36,7 @@ class BoardModel {
      * Return set of cells visible from a single cell, not including
      * that cell.
      */
-    getVisibleCells(cellId) {
+    getVisibleCells(cellId, gamePlay) {
         const [row, col] = this.toRowCol(cellId);
 
         let result = new Set();
@@ -57,17 +57,32 @@ class BoardModel {
             }
         }
 
+        // Anti-knight
+        if (gamePlay.antiKnight) {
+            for (let di = -2; di <= 2; di++) {
+                for (let dj = -2; dj <= 2; dj++) {
+                    if (di*di + dj*dj == 5) {
+                        const row2 = row + di;
+                        const col2 = col + dj;
+                        if (this.isInside(row2, col2)) {
+                            result.add(this.toCellId(row2, col2));
+                        }
+                    }
+                }
+            }
+        }
+
         // Do not include the same cell.
         result.delete(cellId);
         return result;
     }
 
-    getInvalidCellIds() {
+    getInvalidCellIds(gamePlay) {
         let result = new Set();
         for (let i = 0; i < 81; i++) {
             const myValue = this.cells[i].value;
             if (myValue) {
-                this.getVisibleCells(i).forEach((neighborId) => {
+                this.getVisibleCells(i, gamePlay).forEach((neighborId) => {
                     if (myValue === this.cells[neighborId].value) {
                         result.add(i);
                         result.add(neighborId);
@@ -82,8 +97,8 @@ class BoardModel {
         this.cells[cellId].selected = true;
     }
 
-    setRestricted(cellId) {
-        this.getVisibleCells(cellId).forEach((neighborId) => {
+    setRestricted(cellId, gamePlay) {
+        this.getVisibleCells(cellId, gamePlay).forEach((neighborId) => {
             this.cells[neighborId].restricted = true;
         });
     }

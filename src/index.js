@@ -63,7 +63,7 @@ class Game extends React.Component {
         newBoard.setSelected(cellId);
 
         if (this.state.control.displayOptions.highlightRestricted) {
-            newBoard.setRestricted(cellId);
+            newBoard.setRestricted(cellId, this.state.control.gamePlay);
         }
 
         this.assignNewBoard(newBoard);
@@ -105,11 +105,12 @@ class Game extends React.Component {
     verifyBoard() {
         console.log('verifyBoard');
         let newBoard = this.cloneBoard();
-        let invalidCellIds = newBoard.getInvalidCellIds();
+        newBoard.clearAllErrors();
+        let invalidCellIds = newBoard.getInvalidCellIds(this.state.control.gamePlay);
         newBoard.setErrors(invalidCellIds);
         this.assignNewBoard(newBoard);
 
-        alert(invalidCellIds.length > 0 ? 'Error found :(' : 'LGTM!');
+        alert(invalidCellIds.size > 0 ? 'Error found :(' : 'LGTM!');
     }
 
     // Move selected cell in direction (d_row, d_col).
@@ -168,6 +169,13 @@ class Game extends React.Component {
         this.assignNewControl(newControl);
     }
 
+    handleToggleAntiKnight() {
+        console.log('handleToggleAntiKnight');
+        let newControl = this.cloneControl();
+        newControl.toggleAntiKnight();
+        this.assignNewControl(newControl);
+    }
+
     render() {
         return (
             <div
@@ -188,6 +196,7 @@ class Game extends React.Component {
                             control={this.state.control}
                             onClickVerify={() => this.verifyBoard()}
                             onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
+                            onToggleAntiKnight={() => this.handleToggleAntiKnight()}
                         />
                     </div>
                 </div>
