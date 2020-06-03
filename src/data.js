@@ -9,29 +9,29 @@ class CellData {
     }
 
     isRegionTop() {
-        return this.row % 3 == 0;
+        return this.row % 3 === 0;
     }
     isRegionBottom() {
-        return this.row % 3 == 2;
+        return this.row % 3 === 2;
     }
     isRegionLeft() {
-        return this.col % 3 == 0;
+        return this.col % 3 === 0;
     }
     isRegionRight() {
-        return this.col % 3 == 2;
+        return this.col % 3 === 2;
     }
 
     isBoardTop() {
-        return this.row == 0;
+        return this.row === 0;
     }
     isBoardBottom() {
-        return this.row == 8;
+        return this.row === 8;
     }
     isBoardLeft() {
-        return this.col == 0;
+        return this.col === 0;
     }
     isBoardRight() {
-        return this.col == 8;
+        return this.col === 8;
     }
 }
 
