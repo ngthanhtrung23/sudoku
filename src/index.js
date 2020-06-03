@@ -84,6 +84,7 @@ class Game extends React.Component {
     verifyBoard() {
         console.log('verifyBoard');
         let newGame = this.cloneState();
+        let hasError = false;
         for (let i = 0; i < 81; i++) {
             const myValue = newGame.board.cells[i].value;
             if (myValue) {
@@ -91,11 +92,14 @@ class Game extends React.Component {
                     if (myValue === newGame.board.cells[neighborId].value) {
                         newGame.board.cells[i].error = true;
                         newGame.board.cells[neighborId].error = true;
+                        hasError = true;
                     }
                 })
             }
         }
         this.setState(newGame);
+
+        alert(hasError ? 'Error found :(' : 'LGTM!');
     }
 
     // Handle keypress event on a cell.
