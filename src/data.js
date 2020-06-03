@@ -50,7 +50,6 @@ class BoardData {
 
 class ControlData {
     constructor() {
-        this.highlightError = true;
         this.highlightRestricted = true;
     }
 }

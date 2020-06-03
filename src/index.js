@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Board } from './board.js';
+import { Control } from './control.js';
 import { GameData } from './data.js';
 
 import './index.css';
@@ -30,14 +31,13 @@ class Game extends React.Component {
         // Select new cell.
         newGame.board.cells[cellId].selected = true;
 
-        // Clear restricted cells.
+        // Clear all previously restricted cells.
         for (let i = 0; i < 81; i++) {
             newGame.board.cells[i].restricted = false;
         }
-        
-        // Restrict visible cells.
-        const visibles = newGame.getVisibleCells(cellId);
-        visibles.forEach((id) => {
+
+        // Update restricted cells.
+        newGame.getVisibleCells(cellId).forEach((id) => {
             newGame.board.cells[id].restricted = true;
         });
 
@@ -45,10 +45,35 @@ class Game extends React.Component {
     }
 
     fillSelectedWithValue(newValue) {
+        this.clearAllError();
         let newGame = this.cloneState();
         for (let i = 0; i < 81; i++) {
             if (newGame.board.cells[i].selected) {
                 newGame.board.cells[i].value = newValue;
+            }
+        }
+        this.setState(newGame);
+    }
+
+    clearAllError() {
+        let newGame = this.cloneState();
+        for (let i = 0; i < 81; i++) {
+            newGame.board.cells[i].error = false;
+        }
+        this.setState(newGame);
+    }
+
+    verifyBoard() {
+        let newGame = this.cloneState();
+        for (let i = 0; i < 81; i++) {
+            const myValue = newGame.board.cells[i].value;
+            if (myValue) {
+                newGame.getVisibleCells(i).forEach((neighborId) => {
+                    if (myValue === newGame.board.cells[neighborId].value) {
+                        newGame.board.cells[i].error = true;
+                        newGame.board.cells[neighborId].error = true;
+                    }
+                })
             }
         }
         this.setState(newGame);
@@ -79,6 +104,9 @@ class Game extends React.Component {
                         />
                     </div>
                     <div className="col-sm">
+                        <Control
+                            onClickVerify={() => this.verifyBoard()}
+                        />
                     </div>
                 </div>
             </div>
