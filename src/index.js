@@ -159,6 +159,7 @@ class Game extends React.Component {
             case KeyCode.KEY_ESCAPE:
                 this.clearSelectionAndRestricted();
                 break;
+            default:
         }
     }
 

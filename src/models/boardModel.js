@@ -61,7 +61,7 @@ class BoardModel {
         if (gamePlay.antiKnight) {
             for (let di = -2; di <= 2; di++) {
                 for (let dj = -2; dj <= 2; dj++) {
-                    if (di*di + dj*dj == 5) {
+                    if (di*di + dj*dj === 5) {
                         const row2 = row + di;
                         const col2 = col + dj;
                         if (this.isInside(row2, col2)) {
