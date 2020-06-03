@@ -8,7 +8,13 @@
     border-right: 1px solid #000;
 }
 .cell.selected {
-    background-color: rgba(255,215,0,0.5);
+    background-color: rgb(255, 250, 0);
+}
+.cell.restricted {
+    background-color: rgba(255, 190, 0, 0.5);
+}
+.cell.error {
+    background-color: red;
 }
 
 .cell-main-value {
@@ -37,8 +43,4 @@
 }
 .board-bottom {
     border-bottom: 4px solid #000;
-}
-
-.row {
-    display: flex;
 }
