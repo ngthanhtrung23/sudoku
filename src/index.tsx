@@ -9,7 +9,6 @@ import { BoardModel } from './models/boardModel';
 import { CellValue } from './models/cellModel';
 import { ControlModel } from './models/controlModel';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
 type GameProps = {
