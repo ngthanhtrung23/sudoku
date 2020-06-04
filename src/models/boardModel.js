@@ -4,6 +4,10 @@ function set_intersection(a, b) {
     return new Set([...a].filter(x => b.has(x)));
 }
 
+function set_difference(a, b) {
+    return new Set([...a].filter(x => !b.has(x)));
+}
+
 class BoardModel {
     constructor() {
         this.cells = [];
@@ -133,6 +137,22 @@ class BoardModel {
             }
         }
         return result;
+    }
+
+    getPossibleValues(cellId, gamePlay) {
+        const seenValues = Array.from(this.getVisibleCells(cellId, gamePlay))
+            .map(neighborId => this.cells[neighborId].value)
+            .filter(x => x);
+
+        return set_difference(new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9']), new Set(seenValues));
+    }
+
+    fillAllPossibleValues(gamePlay) {
+        this.cells.forEach(cell => {
+            if (!cell.value) {
+                cell.centerValues = this.getPossibleValues(cell.id, gamePlay);
+            }
+        });
     }
 
     setSelected(cellId) {

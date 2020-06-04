@@ -347,6 +347,13 @@ class Game extends React.Component {
         this.assignNewControl(newControl);
     }
 
+    handleClickFillCenter() {
+        console.log('handleClickFillCenter');
+        let newBoard = this.cloneBoard();
+        newBoard.fillAllPossibleValues(this.state.control.gamePlay);
+        this.assignNewBoard(newBoard);
+    }
+
     render() {
         return (
             <div
@@ -377,6 +384,7 @@ class Game extends React.Component {
                             onToggleAutoCleanUp={() => this.handleToggleAutoCleanUp()}
                             onToggleAntiKnight={() => this.handleToggleAntiKnight()}
                             onToggleAntiKing={() => this.handleToggleAntiKing()}
+                            onClickFillCenters={() => this.handleClickFillCenter()}
                         />
                     </div>
                 </div>

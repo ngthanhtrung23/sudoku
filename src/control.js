@@ -64,6 +64,14 @@ class Control extends React.Component {
                     checked={this.props.control.gamePlay.antiKing}
                     onChange={this.props.onToggleAntiKing}
                 />
+                <hr/>
+                <h4>Help</h4>
+                <Button
+                    onClick={this.props.onClickFillCenters}
+                    className="btn-secondary"
+                >
+                    Fill all center values
+                </Button>
             </Form>
         );
     }

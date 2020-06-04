@@ -26,7 +26,12 @@ class Cell extends React.Component {
             .map((value) => {
                 const classes = this.shouldHighlightMatching(value) ? 'matching' : '';
                 return (
-                    <span className={classes}>{value}</span>
+                    <span
+                        className={classes}
+                        key={"corner-" + this.props.cell.id + "-" + value}
+                    >
+                        {value}
+                    </span>
                 );
             });
         return (
@@ -46,7 +51,12 @@ class Cell extends React.Component {
             .map((value) => {
                 const classes = this.shouldHighlightMatching(value) ? 'matching' : '';
                 return (
-                    <span className={classes}>{value}</span>
+                    <span
+                        className={classes}
+                        key={"center-" + this.props.cell.id + "-" + value}
+                    >
+                        {value}
+                    </span>
                 );
             });
         return (
