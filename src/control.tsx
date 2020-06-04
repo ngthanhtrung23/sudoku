@@ -2,7 +2,26 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-class Control extends React.Component {
+import { ControlModel } from './models/controlModel';
+
+type ControlProps = {
+    control: ControlModel,
+
+    onClickVerify: () => void,
+    onClickUndo: () => void,
+    onClickRedo: () => void,
+
+    onToggleHighlightRestricted: () => void,
+    onToggleHighlightMatchingNumbers: () => void,
+    onToggleAutoCleanUp: () => void,
+
+    onToggleAntiKnight: () => void,
+    onToggleAntiKing: () => void,
+
+    onClickFillCenters: () => void,
+};
+
+class Control extends React.Component<ControlProps> {
     render() {
         return (
             <Form>

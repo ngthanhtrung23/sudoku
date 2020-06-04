@@ -1,14 +1,17 @@
-import CellModel from './cellModel.js';
+import { CellModel, CellValue } from './cellModel';
+import { GamePlay } from './controlModel';
 
-function set_intersection(a, b) {
+function set_intersection(a: Set<any>, b: Set<any>) {
     return new Set([...a].filter(x => b.has(x)));
 }
 
-function set_difference(a, b) {
+function set_difference(a: Set<any>, b: Set<any>) {
     return new Set([...a].filter(x => !b.has(x)));
 }
 
 class BoardModel {
+    cells: Array<CellModel>;
+
     constructor() {
         this.cells = [];
         for (let i = 0; i < 81; i++) {
@@ -16,8 +19,13 @@ class BoardModel {
         }
     }
 
-    serialize() {
-        let result = [];
+    serialize(): string {
+        let result: Array<{
+            value: CellValue;
+            cornerValues: Array<CellValue>;
+            centerValues: Array<CellValue>;
+        }> = [];
+
         this.cells.forEach((cell) => {
             result.push({
                 value: cell.value,
@@ -28,7 +36,7 @@ class BoardModel {
         return JSON.stringify(result);
     }
 
-    load(serialized) {
+    load(serialized: string): void {
         this.clearAllErrors();
         this.clearAllRestricteds();
         this.clearAllSelections();
@@ -42,25 +50,25 @@ class BoardModel {
     }
 
     /** Check if a (row, col) is within the board. */
-    isInside(row, col) {
+    isInside(row: number, col: number): boolean {
         return 0 <= row && row < 9 && 0 <= col && col < 9;
     }
 
-    toCellId(row, col) {
+    toCellId(row: number, col: number): number {
         return row * 9 + col;
     }
 
-    toRowCol(cellId) {
+    toRowCol(cellId: number): [number, number] {
         return [~~(cellId / 9), cellId % 9];
     }
 
-    getRegionByPosition(row, col) {
+    getRegionByPosition(row: number, col: number): number {
         const r = ~~(row / 3);
         const c = ~~(col / 3);
         return r * 3 + c;
     }
 
-    getRegion(cellId) {
+    getRegion(cellId: number): number {
         const [row, col] = this.toRowCol(cellId);
         return this.getRegionByPosition(row, col);
     }
@@ -69,10 +77,10 @@ class BoardModel {
      * Return set of cells visible from a single cell, not including
      * that cell.
      */
-    getVisibleCells(cellId, gamePlay) {
+    getVisibleCells(cellId: number, gamePlay: GamePlay): Set<number> {
         const [row, col] = this.toRowCol(cellId);
 
-        let result = new Set();
+        let result: Set<number> = new Set();
 
         // Same row
         for (let col2 = 0; col2 < 9; col2++) {
@@ -123,12 +131,12 @@ class BoardModel {
         return result;
     }
 
-    getInvalidCellIds(gamePlay) {
-        let result = new Set();
+    getInvalidCellIds(gamePlay: GamePlay): Set<number> {
+        let result: Set<number> = new Set();
         for (let i = 0; i < 81; i++) {
             const myValue = this.cells[i].value;
             if (myValue) {
-                this.getVisibleCells(i, gamePlay).forEach((neighborId) => {
+                this.getVisibleCells(i, gamePlay).forEach(neighborId => {
                     if (myValue === this.cells[neighborId].value) {
                         result.add(i);
                         result.add(neighborId);
@@ -139,7 +147,7 @@ class BoardModel {
         return result;
     }
 
-    getPossibleValues(cellId, gamePlay) {
+    getPossibleValues(cellId: number, gamePlay: GamePlay): Set<CellValue> {
         const seenValues = Array.from(this.getVisibleCells(cellId, gamePlay))
             .map(neighborId => this.cells[neighborId].value)
             .filter(x => x);
@@ -147,7 +155,7 @@ class BoardModel {
         return set_difference(new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9']), new Set(seenValues));
     }
 
-    fillAllPossibleValues(gamePlay) {
+    fillAllPossibleValues(gamePlay: GamePlay): void {
         this.cells.forEach(cell => {
             if (!cell.value) {
                 cell.centerValues = this.getPossibleValues(cell.id, gamePlay);
@@ -155,12 +163,12 @@ class BoardModel {
         });
     }
 
-    setSelected(cellId) {
+    setSelected(cellId: number): void {
         this.cells[cellId].selected = true;
     }
 
-    setRestricted(gamePlay) {
-        let restricted = null;
+    setRestricted(gamePlay: GamePlay): void {
+        let restricted: Set<any> | null = null;
 
         for (let id = 0; id < 81; id++) {
             if (this.cells[id].selected) {
@@ -172,18 +180,20 @@ class BoardModel {
             }
         }
 
-        restricted.forEach((cellId) => {
-            this.cells[cellId].restricted = true;
-        })
+        if (restricted) {
+            restricted.forEach((cellId) => {
+                this.cells[cellId].restricted = true;
+            });
+        }
     }
 
-    setErrors(cellIds) {
+    setErrors(cellIds: Set<number>): void {
         cellIds.forEach((id) => {
             this.cells[id].error = true;
         });
     }
 
-    setValueOfSelectedCells(newValue, gamePlay, autoCleanup = false) {
+    setValueOfSelectedCells(newValue: CellValue, gamePlay: GamePlay, autoCleanup: boolean = false): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.value = newValue;
@@ -197,7 +207,7 @@ class BoardModel {
         });
     }
 
-    unsetSelectedCells() {
+    unsetSelectedCells(): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.value = null;
@@ -205,7 +215,7 @@ class BoardModel {
         });
     }
 
-    toggleCornerValuesOfSelectedCells(value) {
+    toggleCornerValuesOfSelectedCells(value: CellValue): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 if (cell.cornerValues.has(value)) {
@@ -217,7 +227,7 @@ class BoardModel {
         });
     }
 
-    clearCornerValuesOfSelectedCells() {
+    clearCornerValuesOfSelectedCells(): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.cornerValues.clear();
@@ -225,7 +235,7 @@ class BoardModel {
         })
     }
 
-    toggleCenterValuesOfSelectedCells(value) {
+    toggleCenterValuesOfSelectedCells(value: CellValue): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 if (cell.centerValues.has(value)) {
@@ -237,7 +247,7 @@ class BoardModel {
         });
     }
 
-    clearCenterValuesOfSelectedCells(value) {
+    clearCenterValuesOfSelectedCells(): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.centerValues.clear();
@@ -245,23 +255,23 @@ class BoardModel {
         });
     }
 
-    clearAllSelections() {
+    clearAllSelections(): void {
         this.cells.forEach((cell) => {
             cell.selected = false;
         });
     }
 
-    clearAllRestricteds() {
+    clearAllRestricteds(): void {
         this.cells.forEach((cell) => {
             cell.restricted = false;
         });
     }
 
-    clearAllErrors() {
+    clearAllErrors(): void {
         this.cells.forEach((cell) => {
             cell.error = false;
         });
     }
 }
 
-export default BoardModel;
+export { BoardModel };

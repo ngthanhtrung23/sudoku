@@ -3,16 +3,31 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import * as KeyCode from 'keycode-js';
 
-import Board from './board.js';
-import Control from './control.js';
-import BoardModel from './models/boardModel.js';
-import ControlModel from './models/controlModel.js';
+import Board from './board';
+import Control from './control';
+import { BoardModel } from './models/boardModel';
+import { CellValue } from './models/cellModel';
+import { ControlModel } from './models/controlModel';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
-class Game extends React.Component {
-    constructor(props) {
+type GameProps = {
+};
+
+type GameState = {
+    board: BoardModel,
+    control: ControlModel,
+
+    history: Array<string>,
+    historyId: number,
+
+    isMouseDown: boolean,
+    highlightMatching: CellValue,
+};
+
+class Game extends React.Component<GameProps, GameState> {
+    constructor(props: GameProps) {
         super(props);
         this.state = {
             board: new BoardModel(),
@@ -28,16 +43,16 @@ class Game extends React.Component {
     }
     
     cloneBoard() {
-        let newBoard = _.clone(this.state.board, true);
+        let newBoard = _.clone(this.state.board);
         return newBoard;
     }
 
     cloneControl() {
-        let newControl = _.clone(this.state.control, true);
+        let newControl = _.clone(this.state.control);
         return newControl;
     }
 
-    assignNewBoard(board) {
+    assignNewBoard(board: BoardModel) {
         const serialized = board.serialize();
         let history = this.state.history;
         let historyId = this.state.historyId;
@@ -89,7 +104,7 @@ class Game extends React.Component {
         });
     }
 
-    assignNewControl(control) {
+    assignNewControl(control: ControlModel) {
         this.setState({ control: control });
     }
 
@@ -120,7 +135,7 @@ class Game extends React.Component {
     }
 
     // Select a cell.
-    select(cellId, clearSelection = true) {
+    select(cellId: number, clearSelection = true) {
         console.log('select ' + cellId);
         let newBoard = this.cloneBoard();
         if (clearSelection) {
@@ -140,13 +155,13 @@ class Game extends React.Component {
     }
 
     // Handle clicking on a cell.
-    handleClick(e, cellId) {
+    handleClick(e: any, cellId: number) {
         console.log('handleClick ' + cellId);
         this.select(cellId, !e.metaKey);
     }
 
     // Handle mousedown on a cell.
-    handleMouseDown(e, cellId) {
+    handleMouseDown(e: any, cellId: number) {
         console.log('handleMouseDown ' + cellId);
         this.setState({isMouseDown: true});
 
@@ -154,7 +169,7 @@ class Game extends React.Component {
     }
 
     // Handle mouseover a cell.
-    handleMouseOver(cellId) {
+    handleMouseOver(cellId: number) {
         if (!this.state.isMouseDown) {
             return;
         }
@@ -167,7 +182,7 @@ class Game extends React.Component {
         this.setState({isMouseDown: false});
     }
 
-    setValueOfSelectedCells(newValue) {
+    setValueOfSelectedCells(newValue: CellValue) {
         console.log('setValueOfSelectedCells ' + newValue);
         this.clearAllError();
 
@@ -191,7 +206,7 @@ class Game extends React.Component {
         this.assignNewBoard(newBoard);
     }
 
-    toggleCornerValuesOfSelectedCells(newValue) {
+    toggleCornerValuesOfSelectedCells(newValue: CellValue) {
         console.log('toggleCornerValuesOfSelectedCells ' + newValue);
 
         let newBoard = this.cloneBoard();
@@ -208,7 +223,7 @@ class Game extends React.Component {
         this.assignNewBoard(newBoard);
     }
 
-    toggleCenterValuesOfSelectedCells(newValue) {
+    toggleCenterValuesOfSelectedCells(newValue: CellValue) {
         console.log('toggleCenterValuesOfSelectedCells ' + newValue);
 
         let newBoard = this.cloneBoard();
@@ -245,7 +260,7 @@ class Game extends React.Component {
 
     // Move selected cell in direction (d_row, d_col).
     // If there are more than one selected cells, only move the first one.
-    moveSelection(d_row, d_col) {
+    moveSelection(d_row: number, d_col: number) {
         let r = 0, c = 0;  // by default, assume that we selected (0, 0).
         for (let i = 0; i < 81; i++) {
             if (this.state.board.cells[i].selected) {
@@ -260,7 +275,7 @@ class Game extends React.Component {
     }
 
     // Handle keypress event on a cell.
-    handleKeyDown(e) {
+    handleKeyDown(e: any) {
         console.log('handleKeyDown, keyCode = ' + e.keyCode);
 
         let isShift = !!e.shiftKey;
@@ -268,7 +283,7 @@ class Game extends React.Component {
 
         // Pressed 1-9
         if (e.keyCode >= KeyCode.KEY_1 && e.keyCode <= KeyCode.KEY_9) {
-            const value = String.fromCharCode(e.keyCode);
+            const value = String.fromCharCode(e.keyCode) as CellValue;
             if (isShift) {
                 this.toggleCornerValuesOfSelectedCells(value)
             } else if (isMeta) {
@@ -362,7 +377,7 @@ class Game extends React.Component {
         return (
             <div
                 onKeyDown={(e) => this.handleKeyDown(e)}
-                tabIndex="0"
+                tabIndex={0}
                 className="container"
                 onMouseUp={() => this.handleMouseUp()}
             >

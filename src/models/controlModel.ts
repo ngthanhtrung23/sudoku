@@ -1,4 +1,19 @@
+type GamePlay = {
+    antiKnight: boolean;
+    antiKing: boolean;
+};
+
 class ControlModel {
+    displayOptions: {
+        highlightRestricted: boolean;
+        highlightMatchingNumbers: boolean;
+        autoCleanUp: boolean;
+    };
+    gamePlay: {
+        antiKnight: boolean;
+        antiKing: boolean;
+    };
+
     constructor() {
         this.displayOptions = {
             highlightRestricted: true,
@@ -11,25 +26,26 @@ class ControlModel {
         };
     }
 
-    toggleHighlightRestricted() {
+    toggleHighlightRestricted(): void {
         this.displayOptions.highlightRestricted = !this.displayOptions.highlightRestricted;
     }
 
-    toggleHighlightMatchingNumbers() {
+    toggleHighlightMatchingNumbers(): void {
         this.displayOptions.highlightMatchingNumbers = !this.displayOptions.highlightMatchingNumbers;
     }
 
-    toggleAutoCleanUp() {
+    toggleAutoCleanUp(): void {
         this.displayOptions.autoCleanUp = !this.displayOptions.autoCleanUp;
     }
 
-    toggleAntiKnight() {
+    toggleAntiKnight(): void {
         this.gamePlay.antiKnight = !this.gamePlay.antiKnight;
     }
 
-    toggleAntiKing() {
+    toggleAntiKing(): void {
         this.gamePlay.antiKing = !this.gamePlay.antiKing;
     }
 }
 
-export default ControlModel;
+export { ControlModel };
+export type { GamePlay };

@@ -1,5 +1,17 @@
+type CellValue = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | null;
+
 class CellModel {
-    constructor(id) {
+    value: CellValue;
+    cornerValues: Set<CellValue>;
+    centerValues: Set<CellValue>;
+    selected: boolean;
+    restricted: boolean;
+    error: boolean;
+    row: number;
+    col: number;
+    id: number;
+
+    constructor(id: number) {
         this.value = null;
         this.cornerValues = new Set();
         this.centerValues = new Set();
@@ -12,31 +24,32 @@ class CellModel {
         this.id = id;
     }
 
-    isRegionTop() {
+    isRegionTop(): boolean {
         return this.row % 3 === 0;
     }
-    isRegionBottom() {
+    isRegionBottom(): boolean {
         return this.row % 3 === 2;
     }
-    isRegionLeft() {
+    isRegionLeft(): boolean {
         return this.col % 3 === 0;
     }
-    isRegionRight() {
+    isRegionRight(): boolean {
         return this.col % 3 === 2;
     }
 
-    isBoardTop() {
+    isBoardTop(): boolean {
         return this.row === 0;
     }
-    isBoardBottom() {
+    isBoardBottom(): boolean {
         return this.row === 8;
     }
-    isBoardLeft() {
+    isBoardLeft(): boolean {
         return this.col === 0;
     }
-    isBoardRight() {
+    isBoardRight(): boolean {
         return this.col === 8;
     }
 }
 
-export default CellModel;
+export { CellModel };
+export type { CellValue };

@@ -1,6 +1,26 @@
 import React from 'react';
 
-class Cell extends React.Component {
+import { BoardModel } from './models/boardModel';
+import { CellModel, CellValue } from './models/cellModel';
+
+type CellProps = {
+    cell: CellModel,
+    onClick: (e: any) => void,
+    onMouseDown: (e: any) => void,
+    onMouseOver: (e: any) => void,
+    key: string,
+    highlightMatching: CellValue,
+};
+
+type BoardProps = {
+    board: BoardModel,
+    onClick: (e: any, i: number) => void,
+    onMouseDown: (e: any, i: number) => void,
+    onMouseOver: (i: number) => void,
+    highlightMatching: CellValue,
+};
+
+class Cell extends React.Component<CellProps> {
     renderCellMainValue() {
         if (this.props.cell.value) {
             return (
@@ -12,7 +32,7 @@ class Cell extends React.Component {
         return;
     }
 
-    shouldHighlightMatching(value) {
+    shouldHighlightMatching(value: CellValue) {
         return this.props.highlightMatching && value === this.props.highlightMatching;
     }
 
@@ -119,21 +139,21 @@ class Cell extends React.Component {
     }
 }
 
-class Board extends React.Component {
-    renderCell(i) {
+class Board extends React.Component<BoardProps> {
+    renderCell(i: number) {
         return (
             <Cell
                 cell={this.props.board.cells[i]}
                 onClick={(e) => this.props.onClick(e, i)}
                 onMouseDown={(e) => this.props.onMouseDown(e, i)}
                 onMouseOver={() => this.props.onMouseOver(i)}
-                key={i}
+                key={String(i)}
                 highlightMatching={this.props.highlightMatching}
             />
         );
     }
 
-    renderRow(startingCell) {
+    renderRow(startingCell: number) {
         let cells = [];
         for (let i = startingCell; i < startingCell + 9; i++) {
             cells.push(this.renderCell(i));
