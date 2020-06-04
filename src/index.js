@@ -104,6 +104,21 @@ class Game extends React.Component {
         this.setState({highlightMatching: null});
     }
 
+    updateHighlightMatchingNumbers() {
+        if (this.state.control.displayOptions.highlightMatchingNumbers) {
+            const selectedValues = new Set(
+                this.state.board.cells
+                    .filter((cell) => cell.selected)
+                    .filter((cell) => cell.value)
+                    .map((cell) => cell.value)
+            );
+            if (selectedValues.size === 1) {
+                const selectedValue = selectedValues.values().next().value;
+                this.setState({highlightMatching: selectedValue});
+            }
+        }
+    }
+
     // Select a cell.
     select(cellId, clearSelection = true) {
         console.log('select ' + cellId);
@@ -121,19 +136,7 @@ class Game extends React.Component {
         }
 
         this.assignNewBoard(newBoard);
-
-        if (this.state.control.displayOptions.highlightMatchingNumbers) {
-            const selectedValues = new Set(
-                newBoard.cells
-                    .filter((cell) => cell.selected)
-                    .filter((cell) => cell.value)
-                    .map((cell) => cell.value)
-            );
-            if (selectedValues.size === 1) {
-                const selectedValue = selectedValues.values().next().value;
-                this.setState({highlightMatching: selectedValue});
-            }
-        }
+        this.updateHighlightMatchingNumbers();
     }
 
     // Handle clicking on a cell.
@@ -175,6 +178,7 @@ class Game extends React.Component {
             this.state.control.displayOptions.autoCleanUp);
 
         this.assignNewBoard(newBoard);
+        this.updateHighlightMatchingNumbers();
     }
 
     unsetSelectedCells() {
