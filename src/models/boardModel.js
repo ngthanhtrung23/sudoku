@@ -1,5 +1,9 @@
 import CellModel from './cellModel.js';
 
+function set_intersection(a, b) {
+    return new Set([...a].filter(x => b.has(x)));
+}
+
 class BoardModel {
     constructor() {
         this.cells = [];
@@ -143,7 +147,7 @@ class BoardModel {
                 if (restricted === null) {
                     restricted = this.getVisibleCells(id, gamePlay);
                 } else {
-                    restricted = new Set([...this.getVisibleCells(id, gamePlay)].filter(x => restricted.has(x)));
+                    restricted = set_intersection(this.getVisibleCells(id, gamePlay), restricted);
                 }
             }
         }
