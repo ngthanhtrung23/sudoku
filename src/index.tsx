@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import _ from 'lodash';
 import * as KeyCode from 'keycode-js';
 
 import Board from './board';
@@ -51,7 +50,7 @@ class Game extends React.Component<GameProps, GameState> {
         if (serialized !== this.state.history[historyId]) {
             // Remove the rest of history.
             // This clean data in case we do lots of undo, and then make a new move.
-            history = _.slice(history, 0, historyId + 1);
+            history = history.slice(0, historyId + 1);
 
             // Update history.
             history.push(serialized);
