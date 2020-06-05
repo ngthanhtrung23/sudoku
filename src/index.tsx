@@ -41,16 +41,6 @@ class Game extends React.Component<GameProps, GameState> {
         this.state.history.push(this.state.board.serialize());
     }
     
-    cloneBoard() {
-        let newBoard = _.clone(this.state.board);
-        return newBoard;
-    }
-
-    cloneControl() {
-        let newControl = _.clone(this.state.control);
-        return newControl;
-    }
-
     assignNewBoard(board: BoardModel) {
         const serialized = board.serialize();
         let history = this.state.history;
@@ -103,13 +93,9 @@ class Game extends React.Component<GameProps, GameState> {
         });
     }
 
-    assignNewControl(control: ControlModel) {
-        this.setState({ control: control });
-    }
-
     clearSelectionAndRestricted() {
         console.log('clearSelectionAndRestricted');
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
 
         newBoard.clearAllSelections();
         newBoard.clearAllRestricteds();
@@ -136,7 +122,7 @@ class Game extends React.Component<GameProps, GameState> {
     // Select a cell.
     select(cellId: number, clearSelection = true) {
         console.log('select ' + cellId);
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         if (clearSelection) {
             this.clearSelectionAndRestricted();
         } else {
@@ -185,7 +171,7 @@ class Game extends React.Component<GameProps, GameState> {
         console.log('setValueOfSelectedCells ' + newValue);
         this.clearAllError();
 
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.setValueOfSelectedCells(
             newValue,
             this.state.control.gamePlay,
@@ -199,7 +185,7 @@ class Game extends React.Component<GameProps, GameState> {
         console.log('unsetSelectedCells');
         this.clearAllError();
 
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.unsetSelectedCells();
 
         this.assignNewBoard(newBoard);
@@ -208,7 +194,7 @@ class Game extends React.Component<GameProps, GameState> {
     toggleCornerValuesOfSelectedCells(newValue: CellValue) {
         console.log('toggleCornerValuesOfSelectedCells ' + newValue);
 
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.toggleCornerValuesOfSelectedCells(newValue);
 
         this.assignNewBoard(newBoard);
@@ -217,7 +203,7 @@ class Game extends React.Component<GameProps, GameState> {
     clearCornerValuesOfSelectedCells() {
         console.log('clearCornerValuesOfSelectedCells');
         
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.clearCornerValuesOfSelectedCells();
         this.assignNewBoard(newBoard);
     }
@@ -225,7 +211,7 @@ class Game extends React.Component<GameProps, GameState> {
     toggleCenterValuesOfSelectedCells(newValue: CellValue) {
         console.log('toggleCenterValuesOfSelectedCells ' + newValue);
 
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.toggleCenterValuesOfSelectedCells(newValue);
 
         this.assignNewBoard(newBoard);
@@ -234,21 +220,21 @@ class Game extends React.Component<GameProps, GameState> {
     clearCenterValuesOfSelectedCells() {
         console.log('clearCenterValuesOfSelectedCells');
 
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.clearCenterValuesOfSelectedCells();
         this.assignNewBoard(newBoard);
     }
 
     clearAllError() {
         console.log('clearAllError');
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.clearAllErrors();
         this.assignNewBoard(newBoard);
     }
 
     verifyBoard() {
         console.log('verifyBoard');
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.clearAllErrors();
         let invalidCellIds = newBoard.getInvalidCellIds(this.state.control.gamePlay);
         newBoard.setErrors(invalidCellIds);
@@ -332,42 +318,42 @@ class Game extends React.Component<GameProps, GameState> {
 
     handleToggleHighlightRestricted() {
         console.log('handleToggleHighlightRestricted');
-        let newControl = this.cloneControl();
+        let newControl = this.state.control;
         newControl.toggleHighlightRestricted();
-        this.assignNewControl(newControl);
+        this.setState({ control: newControl });
     }
 
     handleToggleHighlightMatchingNumbers() {
         console.log('handleToggleHighlightMatchingNumbers');
-        let newControl = this.cloneControl();
+        let newControl = this.state.control;
         newControl.toggleHighlightMatchingNumbers();
-        this.assignNewControl(newControl);
+        this.setState({ control: newControl });
     }
 
     handleToggleAutoCleanUp() {
         console.log('handleToggleAutoCleanUp');
-        let newControl = this.cloneControl();
+        let newControl = this.state.control;
         newControl.toggleAutoCleanUp();
-        this.assignNewControl(newControl);
+        this.setState({ control: newControl });
     }
 
     handleToggleAntiKnight() {
         console.log('handleToggleAntiKnight');
-        let newControl = this.cloneControl();
+        let newControl = this.state.control;
         newControl.toggleAntiKnight();
-        this.assignNewControl(newControl);
+        this.setState({ control: newControl });
     }
 
     handleToggleAntiKing() {
         console.log('handleToggleAntiKing');
-        let newControl = this.cloneControl();
+        let newControl = this.state.control;
         newControl.toggleAntiKing();
-        this.assignNewControl(newControl);
+        this.setState({ control: newControl });
     }
 
     handleClickFillCenter() {
         console.log('handleClickFillCenter');
-        let newBoard = this.cloneBoard();
+        let newBoard = this.state.board;
         newBoard.fillAllPossibleValues(this.state.control.gamePlay);
         this.assignNewBoard(newBoard);
     }
