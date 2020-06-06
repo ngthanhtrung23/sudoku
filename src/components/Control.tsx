@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-import { ControlModel } from './models/controlModel';
+import { ControlModel } from '../models/controlModel';
 
 type ControlProps = {
     control: ControlModel,
