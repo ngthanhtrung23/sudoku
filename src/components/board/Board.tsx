@@ -18,10 +18,7 @@ class Board extends React.Component<BoardProps> {
     }
 
     renderRow(startingCell: number) {
-        let cells = [];
-        for (let i = startingCell; i < startingCell + 9; i++) {
-            cells.push(this.renderCell(i));
-        }
+        const cells = [...Array(9).keys()].map(x => this.renderCell(startingCell + x));
         return (
             <div className="row" key={startingCell}>
                 {cells}
@@ -30,10 +27,7 @@ class Board extends React.Component<BoardProps> {
     }
 
     render() {
-        let rows = [];
-        for (let i = 0; i < 81; i += 9) {
-            rows.push(this.renderRow(i));
-        }
+        const rows = [...Array(9).keys()].map(x => this.renderRow(9 * x));
         return (
             <div>
                 {rows}
