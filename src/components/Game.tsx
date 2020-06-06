@@ -6,9 +6,8 @@ import Control from './control/Control';
 import { BoardModel } from '../models/board';
 import { ControlModel } from '../models/control';
 import { keyDown, mouseDown, mouseOver, mouseUp, select } from '../actions/board';
-import { fillCenter } from '../actions/fill_center';
+import { fillCenter, verify } from '../actions/control';
 import { redo, undo } from '../actions/history';
-import { verify } from '../actions/verify';
 import { HistoryModel } from '../models/history';
 
 export type GameState = {
