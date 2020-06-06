@@ -1,5 +1,5 @@
 import { CellModel, CellValue } from './cell';
-import { GamePlay } from './control';
+import { GameOptions } from './control';
 
 function set_intersection(a: Set<any>, b: Set<any>) {
     return new Set([...a].filter(x => b.has(x)));
@@ -77,7 +77,7 @@ class BoardModel {
      * Return set of cells visible from a single cell, not including
      * that cell.
      */
-    getVisibleCells(cellId: number, gamePlay: GamePlay): Set<number> {
+    getVisibleCells(cellId: number, gamePlay: GameOptions): Set<number> {
         const [row, col] = this.toRowCol(cellId);
 
         let result: Set<number> = new Set();
@@ -131,7 +131,7 @@ class BoardModel {
         return result;
     }
 
-    getInvalidCellIds(gamePlay: GamePlay): Set<number> {
+    getInvalidCellIds(gamePlay: GameOptions): Set<number> {
         let result: Set<number> = new Set();
         for (let i = 0; i < 81; i++) {
             const myValue = this.cells[i].value;
@@ -147,7 +147,7 @@ class BoardModel {
         return result;
     }
 
-    getPossibleValues(cellId: number, gamePlay: GamePlay): Set<CellValue> {
+    getPossibleValues(cellId: number, gamePlay: GameOptions): Set<CellValue> {
         const seenValues = Array.from(this.getVisibleCells(cellId, gamePlay))
             .map(neighborId => this.cells[neighborId].value)
             .filter(x => x);
@@ -155,7 +155,7 @@ class BoardModel {
         return set_difference(new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9']), new Set(seenValues));
     }
 
-    fillAllPossibleValues(gamePlay: GamePlay): void {
+    fillAllPossibleValues(gamePlay: GameOptions): void {
         this.cells.forEach(cell => {
             if (!cell.value) {
                 cell.centerValues = this.getPossibleValues(cell.id, gamePlay);
@@ -167,7 +167,7 @@ class BoardModel {
         this.cells[cellId].selected = true;
     }
 
-    setRestricted(gamePlay: GamePlay): void {
+    setRestricted(gamePlay: GameOptions): void {
         let restricted: Set<any> | null = null;
 
         for (let id = 0; id < 81; id++) {
@@ -193,7 +193,7 @@ class BoardModel {
         });
     }
 
-    setValueOfSelectedCells(newValue: CellValue, gamePlay: GamePlay, autoCleanup: boolean = false): void {
+    setValueOfSelectedCells(newValue: CellValue, gamePlay: GameOptions, autoCleanup: boolean = false): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.value = newValue;

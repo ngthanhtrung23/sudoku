@@ -1,4 +1,4 @@
-export type GamePlay = {
+export type GameOptions = {
     antiKnight: boolean;
     antiKing: boolean;
 };
@@ -11,7 +11,7 @@ export type DisplayOptions = {
 
 export class ControlModel {
     displayOptions: DisplayOptions;
-    gamePlay: GamePlay;
+    gamePlay: GameOptions;
 
     constructor() {
         this.displayOptions = {

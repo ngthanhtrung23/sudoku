@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 import DisplayOptions from './DisplayOptions';
-import GamePlay from './GamePlay';
+import GamePlay from './GameOptions';
 
 class Control extends React.Component<ControlProps> {
     render() {
