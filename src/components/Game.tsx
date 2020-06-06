@@ -2,10 +2,10 @@ import * as KeyCode from 'keycode-js';
 import React from 'react';
 
 import Board from '../components/Board';
-import Control from '../components/Control';
+import Control from './control/Control';
 import { BoardModel } from '../models/boardModel';
 import { CellValue } from '../models/cellModel';
-import { ControlModel } from '../models/controlModel';
+import { ControlModel } from '../models/control';
 
 type GameProps = {
 };
@@ -245,7 +245,6 @@ class Game extends React.Component<GameProps, GameState> {
         let r = 0, c = 0;  // by default, assume that we selected (0, 0).
         for (let i = 0; i < 81; i++) {
             if (this.state.board.cells[i].selected) {
-                console.log(this.state);
                 [r, c] = this.state.board.toRowCol(i);
                 break;
             }
@@ -312,41 +311,6 @@ class Game extends React.Component<GameProps, GameState> {
         }
     }
 
-    handleToggleHighlightRestricted() {
-        console.log('handleToggleHighlightRestricted');
-        let newControl = this.state.control;
-        newControl.toggleHighlightRestricted();
-        this.setState({ control: newControl });
-    }
-
-    handleToggleHighlightMatchingNumbers() {
-        console.log('handleToggleHighlightMatchingNumbers');
-        let newControl = this.state.control;
-        newControl.toggleHighlightMatchingNumbers();
-        this.setState({ control: newControl });
-    }
-
-    handleToggleAutoCleanUp() {
-        console.log('handleToggleAutoCleanUp');
-        let newControl = this.state.control;
-        newControl.toggleAutoCleanUp();
-        this.setState({ control: newControl });
-    }
-
-    handleToggleAntiKnight() {
-        console.log('handleToggleAntiKnight');
-        let newControl = this.state.control;
-        newControl.toggleAntiKnight();
-        this.setState({ control: newControl });
-    }
-
-    handleToggleAntiKing() {
-        console.log('handleToggleAntiKing');
-        let newControl = this.state.control;
-        newControl.toggleAntiKing();
-        this.setState({ control: newControl });
-    }
-
     handleClickFillCenter() {
         console.log('handleClickFillCenter');
         let newBoard = this.state.board;
@@ -375,15 +339,9 @@ class Game extends React.Component<GameProps, GameState> {
                     </div>
                     <div className="col-sm">
                         <Control
-                            control={this.state.control}
                             onClickVerify={() => this.verifyBoard()}
                             onClickUndo={() => this.undo()}
                             onClickRedo={() => this.redo()}
-                            onToggleHighlightRestricted={() => this.handleToggleHighlightRestricted()}
-                            onToggleHighlightMatchingNumbers={() => this.handleToggleHighlightMatchingNumbers()}
-                            onToggleAutoCleanUp={() => this.handleToggleAutoCleanUp()}
-                            onToggleAntiKnight={() => this.handleToggleAntiKnight()}
-                            onToggleAntiKing={() => this.handleToggleAntiKing()}
                             onClickFillCenters={() => this.handleClickFillCenter()}
                         />
                     </div>
@@ -393,4 +351,5 @@ class Game extends React.Component<GameProps, GameState> {
     }
 }
 
+export type { GameState };
 export default Game;

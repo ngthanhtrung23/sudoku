@@ -1,5 +1,5 @@
 import { CellModel, CellValue } from './cellModel';
-import { GamePlay } from './controlModel';
+import { GamePlay } from './control';
 
 function set_intersection(a: Set<any>, b: Set<any>) {
     return new Set([...a].filter(x => b.has(x)));
