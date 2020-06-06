@@ -12,6 +12,7 @@ function set_difference(a: Set<any>, b: Set<any>) {
 class BoardModel {
     cells: Array<CellModel>;
     highlightMatching: CellValue;
+    multiSelectMode: boolean;
 
     constructor() {
         this.cells = [];
@@ -19,6 +20,7 @@ class BoardModel {
             this.cells.push(new CellModel(i));
         }
         this.highlightMatching = null;
+        this.multiSelectMode = false;
     }
 
     serialize(): string {
@@ -167,6 +169,15 @@ class BoardModel {
 
     setSelected(cellId: number): void {
         this.cells[cellId].selected = true;
+    }
+
+    getSelectedValues(): Set<CellValue> {
+        return new Set(
+            this.cells
+                .filter((cell) => cell.selected)
+                .filter((cell) => cell.value)
+                .map((cell) => cell.value)
+        );
     }
 
     setRestricted(gamePlay: GameOptions): void {

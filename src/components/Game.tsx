@@ -8,93 +8,24 @@ import Control from './control/Control';
 import { BoardModel } from '../models/board';
 import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
-import { updateBoard } from '../actions/board';
-import { redo, undo } from '../actions/history';
+import * as BoardActions from '../actions/board';
+import * as HistoryActions from '../actions/history';
 import { HistoryModel } from '../models/history';
 
 export type GameState = {
     board: BoardModel,
     control: ControlModel,
     history: HistoryModel,
-    isMouseDown: boolean,
 };
 
 class Game extends React.Component<GameProps, GameState> {
-    clearSelectionAndRestricted() {
-        console.log('clearSelectionAndRestricted');
-        let newBoard = _.cloneDeep(this.props.board);
-
-        newBoard.clearAllSelections();
-        newBoard.clearAllRestricteds();
-        newBoard.highlightMatching = null;
-
-        this.props.updateBoard(newBoard);
-    }
-
-    getHighlightMatching(): CellValue {
-        if (this.props.control.displayOptions.highlightMatchingNumbers) {
-            const selectedValues = new Set(
-                this.props.board.cells
-                    .filter((cell) => cell.selected)
-                    .filter((cell) => cell.value)
-                    .map((cell) => cell.value)
-            );
-            if (selectedValues.size === 1) {
-                const selectedValue = selectedValues.values().next().value;
-                return selectedValue;
-            }
-        }
-        return null;
-    }
-
-    // Select a cell.
-    select(cellId: number, clearSelection = true) {
-        console.log('select ' + cellId);
-        let newBoard = _.cloneDeep(this.props.board);
-        if (clearSelection) {
-            newBoard.clearAllSelections();
-            newBoard.clearAllRestricteds();
-            newBoard.highlightMatching = null;
-        } else {
-            newBoard.clearAllRestricteds();
-        }
-
-        newBoard.setSelected(cellId);
-
-        if (this.props.control.displayOptions.highlightRestricted) {
-            newBoard.setRestricted(this.props.control.gamePlay);
-        }
-        newBoard.highlightMatching = this.getHighlightMatching();
-
-        this.props.updateBoard(newBoard);
-    }
-
-    // Handle clicking on a cell.
-    handleClick(e: any, cellId: number) {
-        console.log('handleClick ' + cellId);
-        this.select(cellId, !e.metaKey);
-    }
-
-    // Handle mousedown on a cell.
-    handleMouseDown(e: any, cellId: number) {
-        console.log('handleMouseDown ' + cellId);
-        this.setState({isMouseDown: true});
-
-        this.select(cellId, !e.metaKey);
-    }
-
     // Handle mouseover a cell.
     handleMouseOver(cellId: number) {
-        if (!this.props.isMouseDown) {
+        if (!this.props.board.multiSelectMode) {
             return;
         }
         console.log('handleMouseOver ' + cellId);
-        this.select(cellId, false);
-    }
-
-    handleMouseUp() {
-        console.log('handleMouseUp');
-        this.setState({isMouseDown: false});
+        this.props.select(this.props.board, this.props.control, cellId, false);
     }
 
     setValueOfSelectedCells(newValue: CellValue) {
@@ -107,7 +38,15 @@ class Game extends React.Component<GameProps, GameState> {
             this.props.control.gamePlay,
             this.props.control.displayOptions.autoCleanUp);
         
-        newBoard.highlightMatching = this.getHighlightMatching();
+        if (this.props.control.displayOptions.highlightMatchingNumbers) {
+            newBoard.highlightMatching = null;
+
+            const selectedValues = newBoard.getSelectedValues();
+            if (selectedValues.size === 1) {
+                const selectedValue = selectedValues.values().next().value;
+                newBoard.highlightMatching = selectedValue;
+            }
+        }
         this.props.updateBoard(newBoard);
     }
 
@@ -185,7 +124,7 @@ class Game extends React.Component<GameProps, GameState> {
         }
         r = (r + d_row + 9) % 9;
         c = (c + d_col + 9) % 9;
-        this.select(this.props.board.toCellId(r, c));
+        this.props.select(this.props.board, this.props.control, this.props.board.toCellId(r, c));
     }
 
     // Handle keypress event on a cell.
@@ -231,7 +170,7 @@ class Game extends React.Component<GameProps, GameState> {
                 this.moveSelection(0, +1);
                 break;
             case KeyCode.KEY_ESCAPE:
-                this.clearSelectionAndRestricted();
+                this.props.pressEsc(this.props.board);
                 break;
             case KeyCode.KEY_Z:
             case KeyCode.KEY_U:
@@ -258,15 +197,15 @@ class Game extends React.Component<GameProps, GameState> {
                 onKeyDown={(e) => this.handleKeyDown(e)}
                 tabIndex={0}
                 className="container"
-                onMouseUp={() => this.handleMouseUp()}
+                onMouseUp={() => this.props.updateBoard(Object.assign(this.props.board, { multiSelectMode: false}))}
             >
                 <h1>Sudoku Tool</h1>
                 <div className="row">
                     <div className="col-sm">
                         <Board
                             board={this.props.board}
-                            onClick={(e, i) => this.handleClick(e, i)}
-                            onMouseDown={(e, i) => this.handleMouseDown(e, i)}
+                            onClick={(e, id) => this.props.select(this.props.board, this.props.control, id, !e.metaKey)}
+                            onMouseDown={(e, id) => this.props.select(this.props.board, this.props.control, id, !e.metaKey, true)}
                             onMouseOver={(i) => this.handleMouseOver(i)}
                         />
                     </div>
@@ -289,9 +228,14 @@ const mapStateToProps = (state: GameState) => {
 };
 
 const connector = connect(mapStateToProps, {
-    redo,
-    undo,
-    updateBoard,
+    // history actions.
+    redo: HistoryActions.redo,
+    undo: HistoryActions.undo,
+
+    // board actions.
+    pressEsc: BoardActions.pressEsc,
+    select: BoardActions.select,
+    updateBoard: BoardActions.updateBoard,
 });
 
 type GameProps = ConnectedProps<typeof connector>;
