@@ -1,7 +1,7 @@
-import { BoardActionTypes, ACTION_UPDATE_BOARD, ACTION_UNDO, ACTION_REDO } from '../actions/board';
+import { ActionTypes, ACTION_UPDATE_BOARD, ACTION_UNDO, ACTION_REDO } from '../actions/types';
 import { BoardModel } from '../models/board';
 
-export const boardReducer = (board = new BoardModel(), action: BoardActionTypes) => {
+export const boardReducer = (board = new BoardModel(), action: ActionTypes) => {
     if (action.type === ACTION_UPDATE_BOARD) {
         return action.payload.board;
     }

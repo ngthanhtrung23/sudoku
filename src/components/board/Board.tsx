@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Cell from './Cell';
-import { CellValue } from '../../models/cell';
 import { BoardModel } from '../../models/board';
 
 class Board extends React.Component<BoardProps> {

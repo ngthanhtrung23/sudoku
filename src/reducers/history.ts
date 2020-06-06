@@ -1,8 +1,8 @@
 import assert from 'assert';
-import { BoardActionTypes, ACTION_UPDATE_BOARD, ACTION_UNDO, ACTION_REDO } from '../actions/board';
+import { ActionTypes, ACTION_UPDATE_BOARD, ACTION_UNDO, ACTION_REDO } from '../actions/types';
 import { HistoryModel } from '../models/history';
 
-export const historyReducer = (history = new HistoryModel(), action: BoardActionTypes) => {
+export const historyReducer = (history = new HistoryModel(), action: ActionTypes) => {
     if (action.type === ACTION_UPDATE_BOARD) {
         const serialized = action.payload.board.serialize();
 

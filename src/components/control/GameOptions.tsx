@@ -2,7 +2,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { updateGamePlay } from '../../actions/control';
+import { updateGameOptions } from '../../actions/control';
 import { GameState } from '../Game';
 
 class GamePlay extends React.Component<GamePlayProps> {
@@ -39,7 +39,7 @@ const mapStateToProps = (state: GameState) => {
     return {...state.control.gamePlay};
 };
 
-const connector = connect(mapStateToProps, { updateGamePlay });
+const connector = connect(mapStateToProps, { updateGamePlay: updateGameOptions });
 
 type GamePlayProps = ConnectedProps<typeof connector>;
 

@@ -8,37 +8,18 @@ import Control from './control/Control';
 import { BoardModel } from '../models/board';
 import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
-import { redo, undo, updateBoard } from '../actions/board';
+import { updateBoard } from '../actions/board';
+import { redo, undo } from '../actions/history';
+import { HistoryModel } from '../models/history';
 
 export type GameState = {
     board: BoardModel,
     control: ControlModel,
-
-    history: {
-        boards: Array<string>,
-        id: number,
-    },
-
+    history: HistoryModel,
     isMouseDown: boolean,
 };
 
 class Game extends React.Component<GameProps, GameState> {
-    undo() {
-        if (this.props.history.id === 0) {
-            // Nothing to undo.
-            return;
-        }
-        this.props.undo(this.props.history.boards[this.props.history.id - 1]);
-    }
-
-    redo() {
-        if (this.props.history.id >= this.props.history.boards.length - 1) {
-            // Nothing to redo.
-            return;
-        }
-        this.props.redo(this.props.history.boards[this.props.history.id + 1]);
-    }
-
     clearSelectionAndRestricted() {
         console.log('clearSelectionAndRestricted');
         let newBoard = _.cloneDeep(this.props.board);
@@ -254,11 +235,11 @@ class Game extends React.Component<GameProps, GameState> {
                 break;
             case KeyCode.KEY_Z:
             case KeyCode.KEY_U:
-                this.undo();
+                this.props.undo(this.props.history);
                 break;
             case KeyCode.KEY_Y:
             case KeyCode.KEY_R:
-                this.redo();
+                this.props.redo(this.props.history);
                 break;
             default:
         }
@@ -292,8 +273,8 @@ class Game extends React.Component<GameProps, GameState> {
                     <div className="col-sm">
                         <Control
                             onClickVerify={() => this.verifyBoard()}
-                            onClickUndo={() => this.undo()}
-                            onClickRedo={() => this.redo()}
+                            onClickUndo={() => this.props.undo(this.props.history)}
+                            onClickRedo={() => this.props.redo(this.props.history)}
                             onClickFillCenters={() => this.handleClickFillCenter()}
                         />
                     </div>
