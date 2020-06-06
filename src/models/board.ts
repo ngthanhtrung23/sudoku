@@ -11,12 +11,14 @@ function set_difference(a: Set<any>, b: Set<any>) {
 
 class BoardModel {
     cells: Array<CellModel>;
+    highlightMatching: CellValue;
 
     constructor() {
         this.cells = [];
         for (let i = 0; i < 81; i++) {
             this.cells.push(new CellModel(i));
         }
+        this.highlightMatching = null;
     }
 
     serialize(): string {

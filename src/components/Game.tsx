@@ -20,7 +20,6 @@ export type GameState = {
     },
 
     isMouseDown: boolean,
-    highlightMatching: CellValue,
 };
 
 class Game extends React.Component<GameProps, GameState> {
@@ -46,12 +45,12 @@ class Game extends React.Component<GameProps, GameState> {
 
         newBoard.clearAllSelections();
         newBoard.clearAllRestricteds();
+        newBoard.highlightMatching = null;
 
         this.props.updateBoard(newBoard);
-        this.setState({highlightMatching: null});
     }
 
-    updateHighlightMatchingNumbers() {
+    getHighlightMatching(): CellValue {
         if (this.props.control.displayOptions.highlightMatchingNumbers) {
             const selectedValues = new Set(
                 this.props.board.cells
@@ -61,9 +60,10 @@ class Game extends React.Component<GameProps, GameState> {
             );
             if (selectedValues.size === 1) {
                 const selectedValue = selectedValues.values().next().value;
-                this.setState({highlightMatching: selectedValue});
+                return selectedValue;
             }
         }
+        return null;
     }
 
     // Select a cell.
@@ -73,7 +73,7 @@ class Game extends React.Component<GameProps, GameState> {
         if (clearSelection) {
             newBoard.clearAllSelections();
             newBoard.clearAllRestricteds();
-            // this.setState({highlightMatching: null});
+            newBoard.highlightMatching = null;
         } else {
             newBoard.clearAllRestricteds();
         }
@@ -83,9 +83,9 @@ class Game extends React.Component<GameProps, GameState> {
         if (this.props.control.displayOptions.highlightRestricted) {
             newBoard.setRestricted(this.props.control.gamePlay);
         }
+        newBoard.highlightMatching = this.getHighlightMatching();
 
         this.props.updateBoard(newBoard);
-        // this.updateHighlightMatchingNumbers();
     }
 
     // Handle clicking on a cell.
@@ -125,9 +125,9 @@ class Game extends React.Component<GameProps, GameState> {
             newValue,
             this.props.control.gamePlay,
             this.props.control.displayOptions.autoCleanUp);
-
+        
+        newBoard.highlightMatching = this.getHighlightMatching();
         this.props.updateBoard(newBoard);
-        this.updateHighlightMatchingNumbers();
     }
 
     unsetSelectedCells() {
@@ -287,7 +287,6 @@ class Game extends React.Component<GameProps, GameState> {
                             onClick={(e, i) => this.handleClick(e, i)}
                             onMouseDown={(e, i) => this.handleMouseDown(e, i)}
                             onMouseOver={(i) => this.handleMouseOver(i)}
-                            highlightMatching={this.props.highlightMatching}
                         />
                     </div>
                     <div className="col-sm">

@@ -13,7 +13,7 @@ class Board extends React.Component<BoardProps> {
                 onMouseDown={(e) => this.props.onMouseDown(e, i)}
                 onMouseOver={() => this.props.onMouseOver(i)}
                 key={String(i)}
-                highlightMatching={this.props.highlightMatching}
+                highlightMatching={this.props.board.highlightMatching}
             />
         );
     }
@@ -48,7 +48,6 @@ type BoardProps = {
     onClick: (e: any, i: number) => void,
     onMouseDown: (e: any, i: number) => void,
     onMouseOver: (i: number) => void,
-    highlightMatching: CellValue,
 };
 
 
