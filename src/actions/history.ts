@@ -1,12 +1,11 @@
-import { ACTION_NO_OP, ACTION_REDO, ACTION_UNDO, ActionTypes, NoOpAction } from './types';
+import { ACTION_REDO, ACTION_UNDO, NO_OP, ActionTypes } from './types';
 import { HistoryModel } from '../models/history';
 
-const noOpAction: NoOpAction = { type: ACTION_NO_OP };
 
 export const redo = (history: HistoryModel): ActionTypes => {
     if (history.id >= history.boards.length - 1) {
         // Nothing to redo.
-        return noOpAction;
+        return NO_OP;
     }
     return {
         type: ACTION_REDO,
@@ -19,7 +18,7 @@ export const redo = (history: HistoryModel): ActionTypes => {
 export const undo = (history: HistoryModel): ActionTypes => {
     if (history.id === 0) {
         // Nothing to do.
-        return noOpAction;
+        return NO_OP;
     }
     return {
         type: ACTION_UNDO,

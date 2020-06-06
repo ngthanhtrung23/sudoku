@@ -5,6 +5,7 @@ export const ACTION_NO_OP = 'ACTION_NO_OP';
 export interface NoOpAction {
     type: typeof ACTION_NO_OP,
 };
+export const NO_OP: NoOpAction = { type: ACTION_NO_OP };
 
 // Board actions.
 export const ACTION_UPDATE_BOARD = 'ACTION_UPDATE_BOARD';
