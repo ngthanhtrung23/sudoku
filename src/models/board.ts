@@ -1,4 +1,4 @@
-import { CellModel, CellValue } from './cellModel';
+import { CellModel, CellValue } from './cell';
 import { GamePlay } from './control';
 
 function set_intersection(a: Set<any>, b: Set<any>) {

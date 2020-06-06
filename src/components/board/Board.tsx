@@ -1,16 +1,8 @@
 import React from 'react';
 
-import { BoardModel } from '../models/boardModel';
-import { CellValue } from '../models/cellModel';
 import Cell from './Cell';
-
-type BoardProps = {
-    board: BoardModel,
-    onClick: (e: any, i: number) => void,
-    onMouseDown: (e: any, i: number) => void,
-    onMouseOver: (i: number) => void,
-    highlightMatching: CellValue,
-};
+import { CellValue } from '../../models/cell';
+import { BoardModel } from '../../models/board';
 
 class Board extends React.Component<BoardProps> {
     renderCell(i: number) {
@@ -50,5 +42,14 @@ class Board extends React.Component<BoardProps> {
         );
     }
 }
+
+type BoardProps = {
+    board: BoardModel,
+    onClick: (e: any, i: number) => void,
+    onMouseDown: (e: any, i: number) => void,
+    onMouseOver: (i: number) => void,
+    highlightMatching: CellValue,
+};
+
 
 export default Board;

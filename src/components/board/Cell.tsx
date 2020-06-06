@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CellModel, CellValue } from '../models/cellModel';
+import { CellModel, CellValue } from '../../models/cell';
 
 type CellProps = {
     cell: CellModel,

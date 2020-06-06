@@ -1,5 +1,5 @@
-import { BoardModel } from '../models/boardModel';
-import { CellValue } from '../models/cellModel';
+import { BoardModel } from '../models/board';
+import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
 
 export type GameProps = {

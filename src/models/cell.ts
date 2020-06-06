@@ -1,6 +1,6 @@
-type CellValue = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | null;
+export type CellValue = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | null;
 
-class CellModel {
+export class CellModel {
     value: CellValue;
     cornerValues: Set<CellValue>;
     centerValues: Set<CellValue>;
@@ -50,6 +50,3 @@ class CellModel {
         return this.col === 8;
     }
 }
-
-export { CellModel };
-export type { CellValue };

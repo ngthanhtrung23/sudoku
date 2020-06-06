@@ -1,12 +1,9 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { connect, ConnectedProps } from 'react-redux';
 
 import DisplayOptions from './DisplayOptions';
 import GamePlay from './GamePlay';
-import { GameState } from '../types';
-import { updateDisplay } from '../../actions/control';
 
 class Control extends React.Component<ControlProps> {
     render() {
@@ -48,20 +45,7 @@ class Control extends React.Component<ControlProps> {
     }
 }
 
-const mapStateToProps = (state: GameState) => {
-    return {
-        displayOptions: state.control.displayOptions,
-        gamePlay: state.control.gamePlay,
-    };
-};
-
-const connector = connect(mapStateToProps, {
-    updateDisplay
-});
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-type ControlProps = PropsFromRedux & {
+type ControlProps = {
     onClickVerify: () => void,
     onClickUndo: () => void,
     onClickRedo: () => void,
@@ -69,4 +53,4 @@ type ControlProps = PropsFromRedux & {
     onClickFillCenters: () => void,
 };
 
-export default connector(Control);
+export default Control;

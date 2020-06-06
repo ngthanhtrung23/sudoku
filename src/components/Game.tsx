@@ -1,109 +1,60 @@
 import * as KeyCode from 'keycode-js';
+import _ from 'lodash';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
-import Board from '../components/Board';
+import Board from './board/Board';
 import Control from './control/Control';
-import { BoardModel } from '../models/boardModel';
-import { CellValue } from '../models/cellModel';
+import { BoardModel } from '../models/board';
+import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
+import { redo, undo, updateBoard } from '../actions/board';
 
-type GameProps = {
-};
-
-type GameState = {
+export type GameState = {
     board: BoardModel,
     control: ControlModel,
 
-    history: Array<string>,
-    historyId: number,
+    history: {
+        boards: Array<string>,
+        id: number,
+    },
 
     isMouseDown: boolean,
     highlightMatching: CellValue,
 };
 
 class Game extends React.Component<GameProps, GameState> {
-    constructor(props: GameProps) {
-        super(props);
-        this.state = {
-            board: new BoardModel(),
-            control: new ControlModel(),
-            history: [],
-            historyId: 0,
-            isMouseDown: false,
-            highlightMatching: null,
-        };
-        // Assumption:
-        // board is equivalent to history[historyId] at all times.
-        this.state.history.push(this.state.board.serialize());
-    }
-    
-    assignNewBoard(board: BoardModel) {
-        const serialized = board.serialize();
-        let history = this.state.history;
-        let historyId = this.state.historyId;
-
-        // Only update history if the serialized new board is different.
-        // Thus, we ignore all selections and restrictions.
-        if (serialized !== this.state.history[historyId]) {
-            // Remove the rest of history.
-            // This clean data in case we do lots of undo, and then make a new move.
-            history = history.slice(0, historyId + 1);
-
-            // Update history.
-            history.push(serialized);
-            historyId += 1;
-        }
-
-        this.setState({
-            board: board,
-            history: history,
-            historyId: historyId,
-        });
-    }
-    
     undo() {
-        if (this.state.historyId === 0) {
+        if (this.props.history.id === 0) {
             // Nothing to undo.
             return;
         }
-        let board = new BoardModel();
-        board.load(this.state.history[this.state.historyId - 1]);
-
-        this.setState({
-            board: board,
-            historyId: this.state.historyId - 1,
-        });
+        this.props.undo(this.props.history.boards[this.props.history.id - 1]);
     }
 
     redo() {
-        if (this.state.historyId >= this.state.history.length - 1) {
+        if (this.props.history.id >= this.props.history.boards.length - 1) {
             // Nothing to redo.
             return;
         }
-        let board = new BoardModel();
-        board.load(this.state.history[this.state.historyId + 1]);
-
-        this.setState({
-            board: board,
-            historyId: this.state.historyId + 1,
-        });
+        this.props.redo(this.props.history.boards[this.props.history.id + 1]);
     }
 
     clearSelectionAndRestricted() {
         console.log('clearSelectionAndRestricted');
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
 
         newBoard.clearAllSelections();
         newBoard.clearAllRestricteds();
 
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
         this.setState({highlightMatching: null});
     }
 
     updateHighlightMatchingNumbers() {
-        if (this.state.control.displayOptions.highlightMatchingNumbers) {
+        if (this.props.control.displayOptions.highlightMatchingNumbers) {
             const selectedValues = new Set(
-                this.state.board.cells
+                this.props.board.cells
                     .filter((cell) => cell.selected)
                     .filter((cell) => cell.value)
                     .map((cell) => cell.value)
@@ -118,21 +69,23 @@ class Game extends React.Component<GameProps, GameState> {
     // Select a cell.
     select(cellId: number, clearSelection = true) {
         console.log('select ' + cellId);
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         if (clearSelection) {
-            this.clearSelectionAndRestricted();
+            newBoard.clearAllSelections();
+            newBoard.clearAllRestricteds();
+            // this.setState({highlightMatching: null});
         } else {
             newBoard.clearAllRestricteds();
         }
 
         newBoard.setSelected(cellId);
 
-        if (this.state.control.displayOptions.highlightRestricted) {
-            newBoard.setRestricted(this.state.control.gamePlay);
+        if (this.props.control.displayOptions.highlightRestricted) {
+            newBoard.setRestricted(this.props.control.gamePlay);
         }
 
-        this.assignNewBoard(newBoard);
-        this.updateHighlightMatchingNumbers();
+        this.props.updateBoard(newBoard);
+        // this.updateHighlightMatchingNumbers();
     }
 
     // Handle clicking on a cell.
@@ -151,7 +104,7 @@ class Game extends React.Component<GameProps, GameState> {
 
     // Handle mouseover a cell.
     handleMouseOver(cellId: number) {
-        if (!this.state.isMouseDown) {
+        if (!this.props.isMouseDown) {
             return;
         }
         console.log('handleMouseOver ' + cellId);
@@ -167,13 +120,13 @@ class Game extends React.Component<GameProps, GameState> {
         console.log('setValueOfSelectedCells ' + newValue);
         this.clearAllError();
 
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.setValueOfSelectedCells(
             newValue,
-            this.state.control.gamePlay,
-            this.state.control.displayOptions.autoCleanUp);
+            this.props.control.gamePlay,
+            this.props.control.displayOptions.autoCleanUp);
 
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
         this.updateHighlightMatchingNumbers();
     }
 
@@ -181,60 +134,60 @@ class Game extends React.Component<GameProps, GameState> {
         console.log('unsetSelectedCells');
         this.clearAllError();
 
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.unsetSelectedCells();
 
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
     }
 
     toggleCornerValuesOfSelectedCells(newValue: CellValue) {
         console.log('toggleCornerValuesOfSelectedCells ' + newValue);
 
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.toggleCornerValuesOfSelectedCells(newValue);
 
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
     }
 
     clearCornerValuesOfSelectedCells() {
         console.log('clearCornerValuesOfSelectedCells');
         
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.clearCornerValuesOfSelectedCells();
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
     }
 
     toggleCenterValuesOfSelectedCells(newValue: CellValue) {
         console.log('toggleCenterValuesOfSelectedCells ' + newValue);
 
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.toggleCenterValuesOfSelectedCells(newValue);
 
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
     }
 
     clearCenterValuesOfSelectedCells() {
         console.log('clearCenterValuesOfSelectedCells');
 
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.clearCenterValuesOfSelectedCells();
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
     }
 
     clearAllError() {
         console.log('clearAllError');
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.clearAllErrors();
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
     }
 
     verifyBoard() {
         console.log('verifyBoard');
-        let newBoard = this.state.board;
+        let newBoard = _.cloneDeep(this.props.board);
         newBoard.clearAllErrors();
-        let invalidCellIds = newBoard.getInvalidCellIds(this.state.control.gamePlay);
+        let invalidCellIds = newBoard.getInvalidCellIds(this.props.control.gamePlay);
         newBoard.setErrors(invalidCellIds);
-        this.assignNewBoard(newBoard);
+        this.props.updateBoard(newBoard);
 
         alert(invalidCellIds.size > 0 ? 'Error found :(' : 'LGTM!');
     }
@@ -244,14 +197,14 @@ class Game extends React.Component<GameProps, GameState> {
     moveSelection(d_row: number, d_col: number) {
         let r = 0, c = 0;  // by default, assume that we selected (0, 0).
         for (let i = 0; i < 81; i++) {
-            if (this.state.board.cells[i].selected) {
-                [r, c] = this.state.board.toRowCol(i);
+            if (this.props.board.cells[i].selected) {
+                [r, c] = this.props.board.toRowCol(i);
                 break;
             }
         }
         r = (r + d_row + 9) % 9;
         c = (c + d_col + 9) % 9;
-        this.select(this.state.board.toCellId(r, c));
+        this.select(this.props.board.toCellId(r, c));
     }
 
     // Handle keypress event on a cell.
@@ -313,9 +266,9 @@ class Game extends React.Component<GameProps, GameState> {
 
     handleClickFillCenter() {
         console.log('handleClickFillCenter');
-        let newBoard = this.state.board;
-        newBoard.fillAllPossibleValues(this.state.control.gamePlay);
-        this.assignNewBoard(newBoard);
+        let newBoard = _.cloneDeep(this.props.board);
+        newBoard.fillAllPossibleValues(this.props.control.gamePlay);
+        this.props.updateBoard(newBoard);
     }
 
     render() {
@@ -330,11 +283,11 @@ class Game extends React.Component<GameProps, GameState> {
                 <div className="row">
                     <div className="col-sm">
                         <Board
-                            board={this.state.board}
+                            board={this.props.board}
                             onClick={(e, i) => this.handleClick(e, i)}
                             onMouseDown={(e, i) => this.handleMouseDown(e, i)}
                             onMouseOver={(i) => this.handleMouseOver(i)}
-                            highlightMatching={this.state.highlightMatching}
+                            highlightMatching={this.props.highlightMatching}
                         />
                     </div>
                     <div className="col-sm">
@@ -351,5 +304,16 @@ class Game extends React.Component<GameProps, GameState> {
     }
 }
 
-export type { GameState };
-export default Game;
+const mapStateToProps = (state: GameState) => {
+    return {...state};
+};
+
+const connector = connect(mapStateToProps, {
+    redo,
+    undo,
+    updateBoard,
+});
+
+type GameProps = ConnectedProps<typeof connector>;
+
+export default connector(Game);
