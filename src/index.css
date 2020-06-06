@@ -1,6 +1,6 @@
 .cell {
-    width: 60px;
-    height: 60px;
+    width: 11.11%;
+    position: relative;
     flex: 0 0 auto;
     position: relative;
     box-sizing: border-box;
@@ -9,6 +9,11 @@
     -moz-user-select: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
+}
+.cell:after {
+    content: '';
+    display: block;
+    margin-top: 100%;
 }
 .cell.selected {
     background-color: rgb(255, 255, 0);
