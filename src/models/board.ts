@@ -206,16 +206,20 @@ class BoardModel {
         });
     }
 
+    setValueOfSingleCell(cellId: number, newValue: CellValue, gameOptions: GameOptions, autoCleanup: boolean): void {
+        this.cells[cellId].value = newValue;
+        if (autoCleanup) {
+            this.getVisibleCells(this.cells[cellId].id, gameOptions).forEach((id) => {
+                this.cells[id].cornerValues.delete(newValue);
+                this.cells[id].centerValues.delete(newValue);
+            });
+        }
+    }
+
     setValueOfSelectedCells(newValue: CellValue, gameOptions: GameOptions, autoCleanup: boolean = false): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
-                cell.value = newValue;
-                if (autoCleanup) {
-                    this.getVisibleCells(cell.id, gameOptions).forEach((id) => {
-                        this.cells[id].cornerValues.delete(newValue);
-                        this.cells[id].centerValues.delete(newValue);
-                    });
-                }
+                this.setValueOfSingleCell(cell.id, newValue, gameOptions, autoCleanup);
             }
         });
     }
