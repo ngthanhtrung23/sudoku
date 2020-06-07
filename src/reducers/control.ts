@@ -1,4 +1,4 @@
-import { ActionTypes, ACTION_UPDATE_DISPLAY, ACTION_UPDATE_GAME_PLAY } from '../actions/types';
+import { ACTION_UPDATE_DISPLAY, ACTION_UPDATE_GAME_PLAY, ActionTypes } from '../actions/types';
 import { ControlModel } from '../models/control';
 
 export const controlReducer = (control: ControlModel = new ControlModel(), action: ActionTypes) => {
@@ -6,7 +6,7 @@ export const controlReducer = (control: ControlModel = new ControlModel(), actio
         return {...control, displayOptions: action.payload};
     }
     if (action.type === ACTION_UPDATE_GAME_PLAY) {
-        return {...control, gamePlay: action.payload};
+        return {...control, gameOptions: action.payload};
     }
     return control;
 };

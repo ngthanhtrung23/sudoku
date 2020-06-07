@@ -1,11 +1,11 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { connect, ConnectedProps } from 'react-redux';
-
 import { updateGameOptions } from '../../actions/control';
 import { GameState } from '../Game';
 
-class GamePlay extends React.Component<GamePlayProps> {
+
+class GameOptions extends React.Component<GameOptionsProps> {
     render() {
         return (
             <div id="game-play">
@@ -15,7 +15,7 @@ class GamePlay extends React.Component<GamePlayProps> {
                     id='checkbox-anti-knight'
                     label='Anti Knight'
                     checked={this.props.antiKnight}
-                    onChange={() => this.props.updateGamePlay({
+                    onChange={() => this.props.updateGameOptions({
                         ...this.props,
                         antiKnight: !this.props.antiKnight
                     })}
@@ -25,7 +25,7 @@ class GamePlay extends React.Component<GamePlayProps> {
                     id='checkbox-anti-king'
                     label='Anti King'
                     checked={this.props.antiKing}
-                    onChange={() => this.props.updateGamePlay({
+                    onChange={() => this.props.updateGameOptions({
                         ...this.props,
                         antiKing: !this.props.antiKing
                     })}
@@ -36,11 +36,11 @@ class GamePlay extends React.Component<GamePlayProps> {
 }
 
 const mapStateToProps = (state: GameState) => {
-    return {...state.control.gamePlay};
+    return {...state.control.gameOptions};
 };
 
-const connector = connect(mapStateToProps, { updateGamePlay: updateGameOptions });
+const connector = connect(mapStateToProps, { updateGameOptions: updateGameOptions });
 
-type GamePlayProps = ConnectedProps<typeof connector>;
+type GameOptionsProps = ConnectedProps<typeof connector>;
 
-export default connector(GamePlay);
+export default connector(GameOptions);

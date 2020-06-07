@@ -11,7 +11,7 @@ export type DisplayOptions = {
 
 export class ControlModel {
     displayOptions: DisplayOptions;
-    gamePlay: GameOptions;
+    gameOptions: GameOptions;
 
     constructor() {
         this.displayOptions = {
@@ -19,7 +19,7 @@ export class ControlModel {
             highlightMatchingNumbers: false,
             autoCleanUp: false,
         };
-        this.gamePlay = {
+        this.gameOptions = {
             antiKnight: false,
             antiKing: false,
         };

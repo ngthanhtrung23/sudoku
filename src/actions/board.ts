@@ -1,12 +1,12 @@
 import * as KeyCode from 'keycode-js';
 import _ from 'lodash';
-
-import { ACTION_UPDATE_BOARD, NO_OP, ActionTypes } from './types';
-import { undo, redo } from './history';
 import { BoardModel } from '../models/board';
 import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
 import { HistoryModel } from '../models/history';
+import { redo, undo } from './history';
+import { ACTION_UPDATE_BOARD, ActionTypes, NO_OP } from './types';
+
 
 export const updateBoard = (board: BoardModel): ActionTypes => {
     return {
@@ -49,7 +49,7 @@ export const select = (
     newBoard.setSelected(cellId);
 
     if (control.displayOptions.highlightRestricted) {
-        newBoard.setRestricted(control.gamePlay);
+        newBoard.setRestricted(control.gameOptions);
     }
     if (control.displayOptions.highlightMatchingNumbers) {
         newBoard.highlightMatching = null;
@@ -85,7 +85,7 @@ const setValue = (board: BoardModel, control: ControlModel, newValue: CellValue)
     newBoard.clearAllErrors();
     newBoard.setValueOfSelectedCells(
         newValue,
-        control.gamePlay,
+        control.gameOptions,
         control.displayOptions.autoCleanUp);
 
     if (control.displayOptions.highlightMatchingNumbers) {

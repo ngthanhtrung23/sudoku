@@ -1,9 +1,9 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
 import DisplayOptions from './DisplayOptions';
-import GamePlay from './GameOptions';
+import GameOptions from './GameOptions';
+
 
 class Control extends React.Component<ControlProps> {
     render() {
@@ -31,7 +31,7 @@ class Control extends React.Component<ControlProps> {
                 <hr/>
                 <DisplayOptions />
                 <hr/>
-                <GamePlay />
+                <GameOptions />
                 <hr/>
                 <h4>Help</h4>
                 <Button
@@ -39,6 +39,13 @@ class Control extends React.Component<ControlProps> {
                     className="btn-secondary"
                 >
                     Fill all center values
+                </Button>
+                &nbsp;
+                <Button
+                    onClick={this.props.solve}
+                    className="btn-secondary"
+                >
+                    Solve
                 </Button>
             </Form>
         );
@@ -49,6 +56,7 @@ type ControlProps = {
     onClickVerify: () => void,
     onClickUndo: () => void,
     onClickRedo: () => void,
+    solve: () => void,
 
     onClickFillCenters: () => void,
 };

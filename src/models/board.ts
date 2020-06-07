@@ -81,7 +81,7 @@ class BoardModel {
      * Return set of cells visible from a single cell, not including
      * that cell.
      */
-    getVisibleCells(cellId: number, gamePlay: GameOptions): Set<number> {
+    getVisibleCells(cellId: number, gameOptions: GameOptions): Set<number> {
         const [row, col] = this.toRowCol(cellId);
 
         let result: Set<number> = new Set();
@@ -103,7 +103,7 @@ class BoardModel {
         }
 
         // Anti-knight
-        if (gamePlay.antiKnight) {
+        if (gameOptions.antiKnight) {
             for (let di = -2; di <= 2; di++) {
                 for (let dj = -2; dj <= 2; dj++) {
                     if (di*di + dj*dj === 5) {
@@ -118,7 +118,7 @@ class BoardModel {
         }
 
         // Anti-king
-        if (gamePlay.antiKing) {
+        if (gameOptions.antiKing) {
             for (let di = -1; di <= 1; di++) {
                 for (let dj = -1; dj <= 1; dj++) {
                     const row2 = row + di;
@@ -135,12 +135,12 @@ class BoardModel {
         return result;
     }
 
-    getInvalidCellIds(gamePlay: GameOptions): Set<number> {
+    getInvalidCellIds(gameOptions: GameOptions): Set<number> {
         let result: Set<number> = new Set();
         for (let i = 0; i < 81; i++) {
             const myValue = this.cells[i].value;
             if (myValue) {
-                this.getVisibleCells(i, gamePlay).forEach(neighborId => {
+                this.getVisibleCells(i, gameOptions).forEach(neighborId => {
                     if (myValue === this.cells[neighborId].value) {
                         result.add(i);
                         result.add(neighborId);
@@ -151,18 +151,18 @@ class BoardModel {
         return result;
     }
 
-    getPossibleValues(cellId: number, gamePlay: GameOptions): Set<CellValue> {
-        const seenValues = Array.from(this.getVisibleCells(cellId, gamePlay))
+    getPossibleValues(cellId: number, gameOptions: GameOptions): Set<CellValue> {
+        const seenValues = Array.from(this.getVisibleCells(cellId, gameOptions))
             .map(neighborId => this.cells[neighborId].value)
             .filter(x => x);
 
         return set_difference(new Set(['1', '2', '3', '4', '5', '6', '7', '8', '9']), new Set(seenValues));
     }
 
-    fillAllPossibleValues(gamePlay: GameOptions): void {
+    fillAllPossibleValues(gameOptions: GameOptions): void {
         this.cells.forEach(cell => {
             if (!cell.value) {
-                cell.centerValues = this.getPossibleValues(cell.id, gamePlay);
+                cell.centerValues = this.getPossibleValues(cell.id, gameOptions);
             }
         });
     }
@@ -180,15 +180,15 @@ class BoardModel {
         );
     }
 
-    setRestricted(gamePlay: GameOptions): void {
+    setRestricted(gameOptions: GameOptions): void {
         let restricted: Set<any> | null = null;
 
         for (let id = 0; id < 81; id++) {
             if (this.cells[id].selected) {
                 if (restricted === null) {
-                    restricted = this.getVisibleCells(id, gamePlay);
+                    restricted = this.getVisibleCells(id, gameOptions);
                 } else {
-                    restricted = set_intersection(this.getVisibleCells(id, gamePlay), restricted);
+                    restricted = set_intersection(this.getVisibleCells(id, gameOptions), restricted);
                 }
             }
         }
@@ -206,12 +206,12 @@ class BoardModel {
         });
     }
 
-    setValueOfSelectedCells(newValue: CellValue, gamePlay: GameOptions, autoCleanup: boolean = false): void {
+    setValueOfSelectedCells(newValue: CellValue, gameOptions: GameOptions, autoCleanup: boolean = false): void {
         this.cells.forEach((cell) => {
             if (cell.selected) {
                 cell.value = newValue;
                 if (autoCleanup) {
-                    this.getVisibleCells(cell.id, gamePlay).forEach((id) => {
+                    this.getVisibleCells(cell.id, gameOptions).forEach((id) => {
                         this.cells[id].cornerValues.delete(newValue);
                         this.cells[id].centerValues.delete(newValue);
                     });

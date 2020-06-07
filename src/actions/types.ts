@@ -26,7 +26,7 @@ interface UpdateDisplayAction {
     payload: DisplayOptions,
 };
 
-interface UpdateGamePlayAction {
+interface UpdateGameOptionsAction {
     type: typeof ACTION_UPDATE_GAME_PLAY,
     payload: GameOptions,
 }
@@ -51,5 +51,5 @@ export interface UndoAction {
 // Combine all action types.
 export type ActionTypes = NoOpAction
     | UpdateBoardAction
-    | UpdateDisplayAction | UpdateGamePlayAction
+    | UpdateDisplayAction | UpdateGameOptionsAction
     | RedoAction | UndoAction;

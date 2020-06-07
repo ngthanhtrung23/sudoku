@@ -1,14 +1,20 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-
-import Board from './board/Board';
-import Control from './control/Control';
+import {
+    keyDown,
+    mouseDown,
+    mouseOver,
+    mouseUp,
+    select
+    } from '../actions/board';
+import { fillCenter, solve, verify } from '../actions/control';
+import { redo, undo } from '../actions/history';
 import { BoardModel } from '../models/board';
 import { ControlModel } from '../models/control';
-import { keyDown, mouseDown, mouseOver, mouseUp, select } from '../actions/board';
-import { fillCenter, verify } from '../actions/control';
-import { redo, undo } from '../actions/history';
 import { HistoryModel } from '../models/history';
+import Board from './board/Board';
+import Control from './control/Control';
+
 
 export type GameState = {
     board: BoardModel,
@@ -41,6 +47,7 @@ class Game extends React.Component<GameProps, GameState> {
                             onClickUndo={() => this.props.undo(this.props.history)}
                             onClickRedo={() => this.props.redo(this.props.history)}
                             onClickFillCenters={() => this.props.fillCenter(this.props.board, this.props.control)}
+                            solve={() => this.props.solve(this.props.board, this.props.control)}
                         />
                     </div>
                 </div>
@@ -68,6 +75,7 @@ const connector = connect(mapStateToProps, {
     // control actions.
     fillCenter: fillCenter,
     verify: verify,
+    solve: solve,
 });
 
 type GameProps = ConnectedProps<typeof connector>;
