@@ -37,11 +37,12 @@ class Game extends React.Component<GameProps, GameState> {
     }
 
     getUrl = () => {
-        alert("https://ngthanhtrung23.github.io/sudoku/" + this.encodeGameState(this.props.board));
+        alert("https://ngthanhtrung23.github.io/sudoku/#/" + this.encodeGameState(this.props.board));
     }
 
     componentDidMount() {
         if (this.props.encoded) {
+            console.log(this.props.encoded);
             this.props.initGameState(JSON.parse(window.atob(this.props.encoded)));
         }
     }
@@ -82,7 +83,6 @@ class Game extends React.Component<GameProps, GameState> {
 
 type OwnProps = RouteComponentProps<{encoded: string}>;
 const mapStateToProps = (state: GameState, ownProps: OwnProps) => {
-    console.log(ownProps);
     return {
         ...state,
         encoded: ownProps.match.params.encoded,
