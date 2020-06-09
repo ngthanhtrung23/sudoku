@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 import {
+    initGameState,
     keyDown,
     mouseDown,
     mouseOver,
@@ -23,6 +25,27 @@ export type GameState = {
 };
 
 class Game extends React.Component<GameProps, GameState> {
+    encodeGameState = (board: BoardModel): string => {
+        const gameState = {
+            values: this.props.board.cells.map(cell => {
+                if (cell.value) return cell.value;
+                else return '0';
+            }).join(''),
+            gameOptions: this.props.control.gameOptions,
+        };
+        return window.btoa(JSON.stringify(gameState));
+    }
+
+    getUrl = () => {
+        alert("https://ngthanhtrung23.github.io/sudoku/" + this.encodeGameState(this.props.board));
+    }
+
+    componentDidMount() {
+        if (this.props.encoded) {
+            this.props.initGameState(JSON.parse(window.atob(this.props.encoded)));
+        }
+    }
+
     render() {
         return (
             <div
@@ -48,6 +71,7 @@ class Game extends React.Component<GameProps, GameState> {
                             onClickRedo={() => this.props.redo(this.props.history)}
                             onClickFillCenters={() => this.props.fillCenter(this.props.board, this.props.control)}
                             solve={() => this.props.solve(this.props.board, this.props.control)}
+                            getUrl={() => this.getUrl()}
                         />
                     </div>
                 </div>
@@ -56,26 +80,32 @@ class Game extends React.Component<GameProps, GameState> {
     }
 }
 
-const mapStateToProps = (state: GameState) => {
-    return {...state};
+type OwnProps = RouteComponentProps<{encoded: string}>;
+const mapStateToProps = (state: GameState, ownProps: OwnProps) => {
+    console.log(ownProps);
+    return {
+        ...state,
+        encoded: ownProps.match.params.encoded,
+    };
 };
 
 const connector = connect(mapStateToProps, {
     // history actions.
-    redo: redo,
-    undo: undo,
+    redo,
+    undo,
 
     // board actions.
-    keyDown: keyDown,
-    mouseDown: mouseDown,
-    mouseOver: mouseOver,
-    mouseUp: mouseUp,
-    select: select,
+    initGameState,
+    keyDown,
+    mouseDown,
+    mouseOver,
+    mouseUp,
+    select,
 
     // control actions.
-    fillCenter: fillCenter,
-    verify: verify,
-    solve: solve,
+    fillCenter,
+    verify,
+    solve,
 });
 
 type GameProps = ConnectedProps<typeof connector>;

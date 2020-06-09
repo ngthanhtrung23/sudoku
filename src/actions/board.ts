@@ -5,8 +5,23 @@ import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
 import { HistoryModel } from '../models/history';
 import { redo, undo } from './history';
-import { ACTION_UPDATE_BOARD, ActionTypes, NO_OP } from './types';
+import {
+    ACTION_INIT_GAME_STATE,
+    ACTION_UPDATE_BOARD,
+    ActionTypes,
+    NO_OP
+    } from './types';
 
+
+export const initGameState = (decodedState: any) => {
+    return {
+        type: ACTION_INIT_GAME_STATE,
+        payload: {
+            values: decodedState.values,
+            gameOptions: decodedState.gameOptions,
+        },
+    }
+}
 
 export const updateBoard = (board: BoardModel): ActionTypes => {
     return {

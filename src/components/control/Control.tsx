@@ -47,6 +47,13 @@ class Control extends React.Component<ControlProps> {
                 >
                     Solve
                 </Button>
+                <hr/>
+                <Button
+                    onClick={this.props.getUrl}
+                    className="btn-secondary"
+                >
+                    Get URL
+                </Button>
             </Form>
         );
     }
@@ -57,6 +64,7 @@ type ControlProps = {
     onClickUndo: () => void,
     onClickRedo: () => void,
     solve: () => void,
+    getUrl: () => void,
 
     onClickFillCenters: () => void,
 };
