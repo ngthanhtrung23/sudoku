@@ -1,6 +1,8 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { connect, ConnectedProps } from 'react-redux';
 import { GameState } from '../Game';
 import DisplayOptions from './DisplayOptions';
@@ -14,6 +16,15 @@ class Control extends React.Component<ControlProps> {
         }
         return <a href={this.props.url}>Link</a>;
     }
+
+    renderTooltip(id: string, message: string) {
+        return (
+            <Tooltip id={id}>
+                {message}
+            </Tooltip>
+        );
+    }
+
     render() {
         return (
             <Form>
@@ -42,12 +53,17 @@ class Control extends React.Component<ControlProps> {
                 <GameOptions />
                 <hr/>
                 <h4>Help</h4>
-                <Button
-                    onClick={this.props.onClickFillCenters}
-                    className="btn-secondary"
+                <OverlayTrigger
+                    placement="top"
+                    overlay={this.renderTooltip('tooltip-fill-center', 'Show all possible values for each cell.')}
                 >
-                    Fill all center values
-                </Button>
+                    <Button
+                        onClick={this.props.onClickFillCenters}
+                        className="btn-secondary"
+                    >
+                        Fill all center values
+                    </Button>
+                </OverlayTrigger>
                 &nbsp;
                 <Button
                     onClick={this.props.solve}

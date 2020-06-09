@@ -38,7 +38,7 @@ export const verify = (board: BoardModel, control: ControlModel): ActionTypes =>
     let invalidCellIds = newBoard.getInvalidCellIds(control.gameOptions);
     newBoard.setErrors(invalidCellIds);
 
-    alert(invalidCellIds.size > 0 ? 'Error found :(' : 'LGTM!');
+    alert(invalidCellIds.size > 0 ? 'Error found :(' : 'Looks good to me!');
     return updateBoard(newBoard);
 }
 
