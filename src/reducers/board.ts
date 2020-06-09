@@ -28,6 +28,7 @@ export const boardReducer = (board = new BoardModel(), action: ActionTypes) => {
             const value = action.payload.values[i];
             if (value !== '0') {
                 board.cells[i].value = action.payload.values[i] as CellValue;
+                board.cells[i].isFixed = true;
             }
         }
         return board;

@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { CellModel, CellValue } from '../../models/cell';
+
 
 type CellProps = {
     cell: CellModel,
@@ -109,6 +109,8 @@ class Cell extends React.Component<CellProps> {
             classes.push('matching');
         } else if (this.props.cell.restricted) {
             classes.push('restricted');
+        } else if (this.props.cell.isFixed) {
+            classes.push('fixed');
         }
         if (this.props.cell.error) {
             classes.push('error');

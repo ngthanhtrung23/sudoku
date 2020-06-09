@@ -18,6 +18,9 @@
 .cell.selected {
     background-color: rgb(255, 255, 0);
 }
+.cell.fixed {
+    background-color: gainsboro;
+}
 .matching {
     background-color: rgb(255, 150, 0);
 }

@@ -10,6 +10,7 @@ export class CellModel {
     row: number;
     col: number;
     id: number;
+    isFixed: boolean | null;
 
     constructor(id: number) {
         this.value = null;
@@ -18,6 +19,7 @@ export class CellModel {
         this.selected = false;
         this.restricted = false;
         this.error = false;
+        this.isFixed = false;
 
         this.row = ~~(id / 9);
         this.col = id % 9;
