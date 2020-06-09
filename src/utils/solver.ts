@@ -51,9 +51,10 @@ const attempt = (board: BoardModel, control: ControlModel, values: Array<number>
             const saveCandidates = _.clone(candidates);
 
             values[bestId] = value;
-            board.getVisibleCells(bestId, control.gameOptions).forEach((neighborId) => {
+            const neighborIds = board.getVisibleCells(bestId, control.gameOptions);
+            for (let neighborId of neighborIds) {
                 candidates[neighborId] = bitRemoveIfExists(candidates[neighborId], value);
-            });
+            };
 
             let [solution, cnt] = attempt(board, control, values, candidates);
             if (cnt > 0) {
