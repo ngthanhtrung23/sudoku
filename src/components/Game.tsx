@@ -42,7 +42,6 @@ class Game extends React.Component<GameProps, GameState> {
 
     componentDidMount() {
         if (this.props.encoded) {
-            console.log(this.props.encoded);
             this.props.initGameState(JSON.parse(window.atob(this.props.encoded)));
         }
     }
