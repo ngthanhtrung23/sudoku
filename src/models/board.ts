@@ -1,13 +1,6 @@
+import { set_difference, set_intersection } from '../utils/set';
 import { CellModel, CellValue } from './cell';
 import { GameOptions } from './control';
-
-function set_intersection(a: Set<any>, b: Set<any>) {
-    return new Set([...a].filter(x => b.has(x)));
-}
-
-function set_difference(a: Set<any>, b: Set<any>) {
-    return new Set([...a].filter(x => !b.has(x)));
-}
 
 class BoardModel {
     cells: Array<CellModel>;
