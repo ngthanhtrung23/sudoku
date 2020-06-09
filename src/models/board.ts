@@ -200,6 +200,9 @@ class BoardModel {
     }
 
     setValueOfSingleCell(cellId: number, newValue: CellValue, gameOptions: GameOptions, autoCleanup: boolean): void {
+        if (this.cells[cellId].isFixed) {
+            return;
+        }
         this.cells[cellId].value = newValue;
         if (autoCleanup) {
             this.getVisibleCells(this.cells[cellId].id, gameOptions).forEach((id) => {
@@ -219,7 +222,7 @@ class BoardModel {
 
     unsetSelectedCells(): void {
         this.cells.forEach((cell) => {
-            if (cell.selected) {
+            if (cell.selected && !cell.isFixed) {
                 cell.value = null;
             }
         });
