@@ -9,6 +9,7 @@ export const NO_OP: NoOpAction = { type: ACTION_NO_OP };
 
 // Board actions.
 export const ACTION_UPDATE_BOARD = 'ACTION_UPDATE_BOARD';
+export const ACTION_GENERATE_URL = 'ACTION_GENERATE_URL';
 export const ACTION_INIT_GAME_STATE = 'ACTION_INIT_GAME_STATE';
 
 export interface UpdateBoardAction {
@@ -17,13 +18,19 @@ export interface UpdateBoardAction {
         board: BoardModel,
     },
 };
+export interface GenerateUrlAction {
+    type: typeof ACTION_GENERATE_URL,
+    payload: {
+        url: string,
+    },
+};
 export interface InitGameStateAction {
     type: typeof ACTION_INIT_GAME_STATE,
     payload: {
         values: string,
         gameOptions: GameOptions,
     }
-}
+};
 
 // Control actions.
 export const ACTION_UPDATE_DISPLAY = 'ACTION_UPDATE_DISPLAY';
@@ -58,6 +65,6 @@ export interface UndoAction {
 
 // Combine all action types.
 export type ActionTypes = NoOpAction
-    | UpdateBoardAction | InitGameStateAction
+    | UpdateBoardAction | GenerateUrlAction | InitGameStateAction
     | UpdateDisplayAction | UpdateGameOptionsAction
     | RedoAction | UndoAction;

@@ -6,6 +6,7 @@ import { ControlModel } from '../models/control';
 import { HistoryModel } from '../models/history';
 import { redo, undo } from './history';
 import {
+    ACTION_GENERATE_URL,
     ACTION_INIT_GAME_STATE,
     ACTION_UPDATE_BOARD,
     ActionTypes,
@@ -13,7 +14,7 @@ import {
     } from './types';
 
 
-export const initGameState = (decodedState: any) => {
+export const initGameState = (decodedState: any): ActionTypes => {
     return {
         type: ACTION_INIT_GAME_STATE,
         payload: {
@@ -21,7 +22,23 @@ export const initGameState = (decodedState: any) => {
             gameOptions: decodedState.gameOptions,
         },
     }
-}
+};
+
+export const generateUrl = (board: BoardModel, control: ControlModel): ActionTypes => {
+    const gameState = {
+        values: board.cells.map(cell => {
+            if (cell.value) return cell.value;
+            else return '0';
+        }).join(''),
+        gameOptions: control.gameOptions,
+    };
+    return {
+        type: ACTION_GENERATE_URL,
+        payload: {
+            url: window.location.origin + window.location.pathname + '#/' + window.btoa(JSON.stringify(gameState)),
+        },
+    };
+};
 
 export const updateBoard = (board: BoardModel): ActionTypes => {
     return {

@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
-
-import { controlReducer } from './control';
 import { boardReducer } from './board';
+import { controlReducer } from './control';
+import { gameUrlReducer } from './gameUrl';
 import { historyReducer } from './history';
+
 
 const isMouseDownReducer = (isMouseDown = false) => {
     return isMouseDown;
@@ -18,4 +19,5 @@ export default combineReducers({
     history: historyReducer,
     isMouseDown: isMouseDownReducer,
     highlightMatching: highlightMatchingReducer,
+    gameUrl: gameUrlReducer,
 });

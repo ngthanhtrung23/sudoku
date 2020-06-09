@@ -2,6 +2,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import {
+    generateUrl,
     initGameState,
     keyDown,
     mouseDown,
@@ -22,24 +23,10 @@ export type GameState = {
     board: BoardModel,
     control: ControlModel,
     history: HistoryModel,
+    gameUrl: string,
 };
 
 class Game extends React.Component<GameProps, GameState> {
-    encodeGameState = (board: BoardModel): string => {
-        const gameState = {
-            values: this.props.board.cells.map(cell => {
-                if (cell.value) return cell.value;
-                else return '0';
-            }).join(''),
-            gameOptions: this.props.control.gameOptions,
-        };
-        return window.btoa(JSON.stringify(gameState));
-    }
-
-    getUrl = () => {
-        alert("https://ngthanhtrung23.github.io/sudoku/#/" + this.encodeGameState(this.props.board));
-    }
-
     componentDidMount() {
         if (this.props.encoded) {
             this.props.initGameState(JSON.parse(window.atob(this.props.encoded)));
@@ -71,7 +58,7 @@ class Game extends React.Component<GameProps, GameState> {
                             onClickRedo={() => this.props.redo(this.props.history)}
                             onClickFillCenters={() => this.props.fillCenter(this.props.board, this.props.control)}
                             solve={() => this.props.solve(this.props.board, this.props.control)}
-                            getUrl={() => this.getUrl()}
+                            generateUrl={() => this.props.generateUrl(this.props.board, this.props.control)}
                         />
                     </div>
                 </div>
@@ -95,6 +82,7 @@ const connector = connect(mapStateToProps, {
 
     // board actions.
     initGameState,
+    generateUrl,
     keyDown,
     mouseDown,
     mouseOver,

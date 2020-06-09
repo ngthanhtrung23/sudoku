@@ -1,11 +1,19 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { connect, ConnectedProps } from 'react-redux';
+import { GameState } from '../Game';
 import DisplayOptions from './DisplayOptions';
 import GameOptions from './GameOptions';
 
 
 class Control extends React.Component<ControlProps> {
+    renderUrl() {
+        if (!this.props.url) {
+            return;
+        }
+        return <a href={this.props.url}>Link</a>;
+    }
     render() {
         return (
             <Form>
@@ -49,24 +57,30 @@ class Control extends React.Component<ControlProps> {
                 </Button>
                 <hr/>
                 <Button
-                    onClick={this.props.getUrl}
+                    onClick={this.props.generateUrl}
                     className="btn-secondary"
                 >
                     Get URL
                 </Button>
+                &nbsp;
+                {this.renderUrl()}
             </Form>
         );
     }
 }
 
-type ControlProps = {
+const mapStateToProps = (state: GameState) => {
+    return { url: state.gameUrl };
+};
+const connector = connect(mapStateToProps);
+type ControlProps = ConnectedProps<typeof connector> & {
     onClickVerify: () => void,
     onClickUndo: () => void,
     onClickRedo: () => void,
     solve: () => void,
-    getUrl: () => void,
+    generateUrl: () => void,
 
     onClickFillCenters: () => void,
 };
 
-export default Control;
+export default connector(Control);
