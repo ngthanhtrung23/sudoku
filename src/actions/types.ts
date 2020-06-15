@@ -28,6 +28,8 @@ export interface InitGameStateAction {
     type: typeof ACTION_INIT_GAME_STATE,
     payload: {
         values: string,
+        rowSandwichSums: Array<number|null>,
+        colSandwichSums: Array<number|null>,
         gameOptions: GameOptions,
     }
 };

@@ -14,7 +14,10 @@ class SandwichCell extends React.Component<SandwichCellProps> {
         let classes = ['sandwich-cell'];
         if (this.props.value.selected) {
             classes.push('selected');
-        } else if (this.props.value.error) {
+        } else if (this.props.value.isFixed) {
+            classes.push('fixed');
+        }
+        if (this.props.value.error) {
             classes.push('error');
         }
         return (

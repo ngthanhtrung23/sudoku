@@ -31,6 +31,18 @@ export const boardReducer = (board = new BoardModel(), action: ActionTypes) => {
                 board.cells[i].isFixed = true;
             }
         }
+        if (action.payload.rowSandwichSums !== null) {
+            for (let i = 0; i < 9; i++) {
+                board.rowSandwich[i].value = action.payload.rowSandwichSums[i];
+                board.rowSandwich[i].isFixed = true;
+            }
+        }
+        if (action.payload.colSandwichSums !== null) {
+            for (let i = 0; i < 9; i++) {
+                board.colSandwich[i].value = action.payload.colSandwichSums[i];
+                board.colSandwich[i].isFixed = true;
+            }
+        }
         return board;
     }
 

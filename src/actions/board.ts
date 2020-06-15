@@ -19,6 +19,8 @@ export const initGameState = (decodedState: any): ActionTypes => {
         type: ACTION_INIT_GAME_STATE,
         payload: {
             values: decodedState.values,
+            rowSandwichSums: decodedState.rowSandwichSums,
+            colSandwichSums: decodedState.colSandwichSums,
             gameOptions: decodedState.gameOptions,
         },
     }
@@ -30,6 +32,8 @@ export const generateUrl = (board: BoardModel, control: ControlModel): ActionTyp
             if (cell.value) return cell.value;
             else return '0';
         }).join(''),
+        rowSandwichSums: (control.gameOptions.sandwich) ? board.rowSandwich.map(cell => cell.value) : null,
+        colSandwichSums: (control.gameOptions.sandwich) ? board.colSandwich.map(cell => cell.value) : null,
         gameOptions: control.gameOptions,
     };
     return {
