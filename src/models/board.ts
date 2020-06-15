@@ -195,7 +195,7 @@ class BoardModel {
             } else {
                 return +str;
             }
-        }).reduce((sum, current) => sum + current);
+        }).reduce((sum, current) => sum + current, 0);
     }
 
     getRowSandwichSum(rowId: number): number | null {

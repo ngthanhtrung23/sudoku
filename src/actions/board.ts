@@ -204,9 +204,39 @@ const move = (board: BoardModel, control: ControlModel, d_row: number, d_col: nu
             break;
         }
     }
-    r = (r + d_row + 9) % 9;
-    c = (c + d_col + 9) % 9;
-    return select(board, control, board.toCellId(r, c));
+    for (let i = 0; i < 9; i++) {
+        if (board.colSandwich[i].selected) {
+            r = -1;
+            c = i;
+            break;
+        }
+        if (board.rowSandwich[i].selected) {
+            r = i;
+            c = -1;
+        }
+    }
+
+    if (control.gameOptions.sandwich) {
+        r = (r + d_row + 10) % 10;
+        c = (c + d_col + 10) % 10;
+
+        if (r === 9 && c === 9) {
+            // This is the empty cell outside board.
+            return selectSandwich(board, control, false, 0);
+        } else if (r === 9) {
+            // Column sandwich
+            return selectSandwich(board, control, false, c);
+        } else if (c === 9) {
+            // Row sandwich
+            return selectSandwich(board, control, true, r);
+        } else {
+            return select(board, control, board.toCellId(r, c));
+        }
+    } else {
+        r = (r + d_row + 9) % 9;
+        c = (c + d_col + 9) % 9;
+        return select(board, control, board.toCellId(r, c));
+    }
 }
 
 const pressBackspace = (board: BoardModel): ActionTypes => {
