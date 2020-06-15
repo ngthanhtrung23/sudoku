@@ -111,8 +111,7 @@ class Cell extends React.Component<CellProps> {
             classes.push('restricted');
         } else if (this.props.cell.isFixed) {
             classes.push('fixed');
-        }
-        if (this.props.cell.error) {
+        } else if (this.props.cell.error) {
             classes.push('error');
         }
 

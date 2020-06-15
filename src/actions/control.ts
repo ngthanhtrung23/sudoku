@@ -34,6 +34,8 @@ export const updateGameOptions = (gameOptions: GameOptions): ActionTypes => {
 
 export const verify = (board: BoardModel, control: ControlModel): ActionTypes => {
     let newBoard = _.cloneDeep(board);
+    newBoard.clearAllSelections();
+    newBoard.clearAllRestricteds();
     newBoard.clearAllErrors();
     let invalidCellIds = newBoard.getInvalidCellIds(control.gameOptions);
     newBoard.setErrors(invalidCellIds);
