@@ -1,11 +1,17 @@
 import { set_difference, set_intersection } from '../utils/set';
 import { CellModel, CellValue } from './cell';
 import { GameOptions } from './control';
+import { SandwichCellModel } from './sandwichCell';
 
 class BoardModel {
     cells: Array<CellModel>;
     highlightMatching: CellValue;
     multiSelectMode: boolean;
+
+    // For sandwich sudoku
+    // For each row and column, we may be given the sum of cells between the cells containing 1 and 9.
+    rowSandwich: Array<SandwichCellModel>;
+    colSandwich: Array<SandwichCellModel>;
 
     constructor() {
         this.cells = [];
@@ -14,6 +20,13 @@ class BoardModel {
         }
         this.highlightMatching = null;
         this.multiSelectMode = false;
+
+        this.rowSandwich = [];
+        this.colSandwich = [];
+        for (let i = 0; i < 9; i++) {
+            this.rowSandwich.push(new SandwichCellModel());
+            this.colSandwich.push(new SandwichCellModel());
+        }
     }
 
     serialize(): string {
@@ -160,6 +173,41 @@ class BoardModel {
         });
     }
 
+    hasSelected(): boolean {
+        return this.cells.find(cell => cell.selected) !== undefined;
+    }
+
+    hasSandwichSelected(): boolean {
+        return this.rowSandwich.find(cell => cell.selected) !== undefined
+            || this.colSandwich.find(cell => cell.selected) !== undefined;
+    }
+
+    getSandwichSum(values: Array<CellValue>): number | null {
+        if (values.indexOf('1') < 0 || values.indexOf('9') < 0) {
+            return null;
+        }
+        const left = Math.min(values.indexOf('1'), values.indexOf('9'));
+        const right = Math.max(values.indexOf('1'), values.indexOf('9'));
+
+        return values.slice(left + 1, right).map(str => {
+            if (str === null) {
+                return 0;
+            } else {
+                return +str;
+            }
+        }).reduce((sum, current) => sum + current);
+    }
+
+    getRowSandwichSum(rowId: number): number | null {
+        const row = this.cells.slice(rowId * 9, rowId * 9 + 9).map(cell => cell.value);
+        return this.getSandwichSum(row);
+    }
+
+    getColSandwichSum(colId: number): number | null {
+        const col = this.cells.filter(cell => cell.id % 9 === colId).map(cell => cell.value);
+        return this.getSandwichSum(col);
+    }
+
     setSelected(cellId: number): void {
         this.cells[cellId].selected = true;
     }
@@ -221,11 +269,13 @@ class BoardModel {
     }
 
     unsetSelectedCells(): void {
-        this.cells.forEach((cell) => {
-            if (cell.selected && !cell.isFixed) {
-                cell.value = null;
-            }
-        });
+        this.cells
+            .filter(cell => cell.selected && !cell.isFixed)
+            .forEach(cell => { cell.value = null });
+        
+        [...this.rowSandwich, ...this.colSandwich]
+            .filter(cell => cell.selected)
+            .forEach(cell => { cell.value = null });
     }
 
     toggleCornerValuesOfSelectedCells(value: CellValue): void {
@@ -272,6 +322,12 @@ class BoardModel {
         this.cells.forEach((cell) => {
             cell.selected = false;
         });
+        this.rowSandwich.forEach((cell) => {
+            cell.selected = false;
+        });
+        this.colSandwich.forEach((cell) => {
+            cell.selected = false;
+        });
     }
 
     clearAllRestricteds(): void {
@@ -281,9 +337,9 @@ class BoardModel {
     }
 
     clearAllErrors(): void {
-        this.cells.forEach((cell) => {
-            cell.error = false;
-        });
+        this.cells.forEach(cell => { cell.error = false });
+        this.rowSandwich.forEach(cell => { cell.error = false });
+        this.colSandwich.forEach(cell => { cell.error = false });
     }
 }
 

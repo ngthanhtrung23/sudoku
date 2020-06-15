@@ -38,7 +38,35 @@ export const verify = (board: BoardModel, control: ControlModel): ActionTypes =>
     let invalidCellIds = newBoard.getInvalidCellIds(control.gameOptions);
     newBoard.setErrors(invalidCellIds);
 
-    alert(invalidCellIds.size > 0 ? 'Error found :(' : 'Looks good to me!');
+    let hasError = invalidCellIds.size > 0;
+
+    for (let i = 0; i < 9; i++) {
+        if (!newBoard.rowSandwich[i].isValid()) {
+            hasError = true;
+            newBoard.rowSandwich[i].error = true;
+        } else {
+            const want = newBoard.rowSandwich[i].value;
+            const has = newBoard.getRowSandwichSum(i);
+            if (want !== null && has !== null && want !== has) {
+                hasError = true;
+                newBoard.rowSandwich[i].error = true;
+            }
+        }
+
+        if (!newBoard.colSandwich[i].isValid()) {
+            hasError = true;
+            newBoard.colSandwich[i].error = true;
+        } else {
+            const want = newBoard.colSandwich[i].value;
+            const has = newBoard.getColSandwichSum(i);
+            if (want !== null && has !== null && want !== has) {
+                hasError = true;
+                newBoard.colSandwich[i].error = true;
+            }
+        }
+    }
+
+    alert(hasError ? 'Error found :(' : 'Looks good to me!');
     return updateBoard(newBoard);
 }
 

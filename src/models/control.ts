@@ -1,6 +1,7 @@
 export type GameOptions = {
     antiKnight: boolean;
     antiKing: boolean;
+    sandwich: boolean;
 };
 
 export type DisplayOptions = {
@@ -22,6 +23,7 @@ export class ControlModel {
         this.gameOptions = {
             antiKnight: false,
             antiKing: false,
+            sandwich: false,
         };
     }
 }

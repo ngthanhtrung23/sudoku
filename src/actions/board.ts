@@ -96,6 +96,29 @@ export const select = (
     return updateBoard(newBoard);
 }
 
+export const selectSandwich = (
+        board: BoardModel,
+        control: ControlModel,
+        isRow: boolean,
+        id: number): ActionTypes => {
+    let newBoard = _.cloneDeep(board);
+    if (!control.gameOptions.sandwich) {
+        throw new Error('Attempt to select sandwich in normal mode');
+    }
+
+    newBoard.clearAllSelections();
+    newBoard.clearAllRestricteds();
+    newBoard.highlightMatching = null;
+
+    if (isRow) {
+        newBoard.rowSandwich[id].selected = true;
+    } else {
+        newBoard.colSandwich[id].selected = true;
+    }
+
+    return updateBoard(newBoard);
+}
+
 export const mouseDown = (board: BoardModel, control: ControlModel, cellId: number, clearSelection: boolean): ActionTypes => {
     return select(board, control, cellId, clearSelection, true);
 }
@@ -129,6 +152,19 @@ const setValue = (board: BoardModel, control: ControlModel, newValue: CellValue)
             newBoard.highlightMatching = selectedValue;
         }
     }
+    return updateBoard(newBoard);
+};
+
+const setSandwichValue = (board: BoardModel, newValue: number): ActionTypes => {
+    let newBoard = _.cloneDeep(board);
+
+    newBoard.clearAllErrors();
+    [...newBoard.rowSandwich, ...newBoard.colSandwich]
+        .filter(cell => cell.selected)
+        .forEach(cell => {
+            if (cell.value === null) cell.value = newValue;
+            else if (cell.value < 10) cell.value = cell.value * 10 + newValue;
+        });
     return updateBoard(newBoard);
 };
 
@@ -185,17 +221,23 @@ export const keyDown = (board: BoardModel, control: ControlModel, history: Histo
     let isShift = !!e.shiftKey;
     let isMeta = !!e.metaKey;
 
-    // Pressed 1-9
-    if (e.keyCode >= KeyCode.KEY_1 && e.keyCode <= KeyCode.KEY_9) {
-        const value = String.fromCharCode(e.keyCode) as CellValue;
-        if (isShift) {
-            return toggleCornerValues(board, value)
-        } else if (isMeta) {
-            e.preventDefault();
-            return toggleCenterValues(board, value);
-        } else {
-            return setValue(board, control, value);
+    // Pressed 0-9
+    if (e.keyCode >= KeyCode.KEY_0 && e.keyCode <= KeyCode.KEY_9) {
+        if (e.keyCode !== KeyCode.KEY_0 && board.hasSelected()) {
+            const value = String.fromCharCode(e.keyCode) as CellValue;
+            if (isShift) {
+                return toggleCornerValues(board, value)
+            } else if (isMeta) {
+                e.preventDefault();
+                return toggleCenterValues(board, value);
+            } else {
+                return setValue(board, control, value);
+            }
         }
+        if (board.hasSandwichSelected()) {
+            return setSandwichValue(board, +String.fromCharCode(e.keyCode));
+        }
+        return NO_OP;
     }
 
     switch (e.keyCode) {

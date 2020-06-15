@@ -47,6 +47,16 @@ class GameOptions extends React.Component<GameOptionsProps> {
                         antiKing: !this.props.antiKing
                     })}
                 />
+                <Form.Check
+                    type='checkbox'
+                    id='checkbox-sandwich'
+                    label={this.renderLabel('Sandwich', 'tooltip-sandwich', 'The numbers in each row / column specify the sum between the number 1 and 9 in that row / column.')}
+                    checked={this.props.sandwich}
+                    onChange={() => this.props.updateGameOptions({
+                        ...this.props,
+                        sandwich: !this.props.sandwich
+                    })}
+                />
             </div>
         );
     }
@@ -56,7 +66,7 @@ const mapStateToProps = (state: GameState) => {
     return {...state.control.gameOptions};
 };
 
-const connector = connect(mapStateToProps, { updateGameOptions: updateGameOptions });
+const connector = connect(mapStateToProps, { updateGameOptions });
 
 type GameOptionsProps = ConnectedProps<typeof connector>;
 

@@ -8,7 +8,8 @@ import {
     mouseDown,
     mouseOver,
     mouseUp,
-    select
+    select,
+    selectSandwich
     } from '../actions/board';
 import { fillCenter, solve, verify } from '../actions/control';
 import { redo, undo } from '../actions/history';
@@ -46,7 +47,9 @@ class Game extends React.Component<GameProps, GameState> {
                     <div className="col-sm">
                         <Board
                             board={this.props.board}
+                            gameOptions={this.props.control.gameOptions}
                             onClick={(e, id) => this.props.select(this.props.board, this.props.control, id, !e.metaKey)}
+                            onSelectSandwich={(e, isRow, id) => this.props.selectSandwich(this.props.board, this.props.control, isRow, id)}
                             onMouseDown={(e, id) => this.props.mouseDown(this.props.board, this.props.control, id, !e.metaKey)}
                             onMouseOver={(id) => this.props.mouseOver(this.props.board, this.props.control, id)}
                         />
@@ -88,6 +91,7 @@ const connector = connect(mapStateToProps, {
     mouseOver,
     mouseUp,
     select,
+    selectSandwich,
 
     // control actions.
     fillCenter,
