@@ -1,8 +1,20 @@
 import assert from 'assert';
-import { ActionTypes, ACTION_UPDATE_BOARD, ACTION_UNDO, ACTION_REDO } from '../actions/types';
+import {
+    ACTION_INIT_GAME_STATE,
+    ACTION_REDO,
+    ACTION_UNDO,
+    ACTION_UPDATE_BOARD,
+    ActionTypes
+    } from '../actions/types';
 import { HistoryModel } from '../models/history';
 
 export const historyReducer = (history = new HistoryModel(), action: ActionTypes) => {
+    if (action.type === ACTION_INIT_GAME_STATE) {
+        return {
+            boards: [action.payload.board.serialize()],
+            id: 0,
+        };
+    }
     if (action.type === ACTION_UPDATE_BOARD) {
         const serialized = action.payload.board.serialize();
 

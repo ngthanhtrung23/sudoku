@@ -1,4 +1,4 @@
-import { BoardModel } from "./board";
+import { BoardModel } from './board';
 
 export class HistoryModel {
     boards: Array<string>;

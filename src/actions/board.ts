@@ -15,12 +15,30 @@ import {
 
 
 export const initGameState = (decodedState: any): ActionTypes => {
+    const board = new BoardModel();
+    for (let i = 0; i < 81; i++) {
+        const value = decodedState.values[i];
+        if (value !== '0') {
+            board.cells[i].value = decodedState.values[i] as CellValue;
+            board.cells[i].isFixed = true;
+        }
+    }
+    if (decodedState.rowSandwichSums !== null) {
+        for (let i = 0; i < 9; i++) {
+            board.rowSandwich[i].value = decodedState.rowSandwichSums[i];
+            board.rowSandwich[i].isFixed = true;
+        }
+    }
+    if (decodedState.colSandwichSums !== null) {
+        for (let i = 0; i < 9; i++) {
+            board.colSandwich[i].value = decodedState.colSandwichSums[i];
+            board.colSandwich[i].isFixed = true;
+        }
+    }
     return {
         type: ACTION_INIT_GAME_STATE,
         payload: {
-            values: decodedState.values,
-            rowSandwichSums: decodedState.rowSandwichSums,
-            colSandwichSums: decodedState.colSandwichSums,
+            board: board,
             gameOptions: decodedState.gameOptions,
         },
     }
