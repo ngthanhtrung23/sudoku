@@ -189,13 +189,14 @@ class BoardModel {
         const left = Math.min(values.indexOf('1'), values.indexOf('9'));
         const right = Math.max(values.indexOf('1'), values.indexOf('9'));
 
-        return values.slice(left + 1, right).map(str => {
-            if (str === null) {
-                return 0;
-            } else {
-                return +str;
+        let sum = 0;
+        for (let value of values.slice(left + 1, right)) {
+            if (value === null) {
+                return null;
             }
-        }).reduce((sum, current) => sum + current, 0);
+            sum += +value;
+        }
+        return sum;
     }
 
     getRowSandwichSum(rowId: number): number | null {
