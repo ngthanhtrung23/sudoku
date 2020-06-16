@@ -1,8 +1,9 @@
+import SortedSet from 'collections/sorted-set';
 import _ from 'lodash';
 import { BoardModel } from '../models/board';
 import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
-import { bitContains, bitCount, bitRemoveIfExists } from './bits';
+import { bitContains, bitCount } from './bits';
 import { sandwichLengths, sumToSeqs } from './sandwich';
 
 const toRowId = (cellId: number) => {
@@ -26,6 +27,94 @@ const getColValues = (colId: number, values: Array<number>): Array<number> => {
     }
     return res;
 }
+
+const equals = (a: [number, number], b: [number, number]): boolean => {
+    return a[0] === b[0] && a[1] === b[1];
+};
+const compare = (a: [number, number], b: [number, number]): number => {
+    if (a[0] !== b[0]) {
+        return a[0] - b[0];
+    }
+    return a[1] - b[1];
+}
+
+class CandidateStore {
+    candidates: Array<number>;
+    set: SortedSet<[number, number]>;
+
+    constructor(_candidates: Array<number>) {
+        this.candidates = _candidates.map(candidate => (candidate <= 0 ? -1 : candidate));
+        this.set = new SortedSet(
+            [],
+            equals,
+            compare
+        );
+
+        for (let i = 0; i < 81; i++) {
+            if (_candidates[i] > 0) {
+                this.set.add([bitCount(_candidates[i]), i]);
+            }
+        }
+    }
+
+    hasCandidate(cellId: number, candidate: number): boolean {
+        if (this.candidates[cellId] < 0) return false;
+        return bitContains(this.candidates[cellId], candidate);
+    }
+
+    getCandidates(cellId: number): Array<number> {
+        if (this.candidates[cellId] < 0) {
+            return [];
+        }
+
+        let res = [];
+        for (let i = 1; i <= 9; i++) {
+            if (this.hasCandidate(cellId, i)) {
+                res.push(i);
+            }
+        }
+        return res;
+    }
+
+    getBestCell(): [number, number] {
+        let minNode = this.set.min();
+        if (minNode) {
+            return minNode;
+        }
+        return [-1, -1];
+    }
+
+    setCandidate(cellId: number, newValue: number) {
+        if (this.candidates[cellId] < 0) return;
+
+        this.set.remove([bitCount(this.candidates[cellId]), cellId]);
+        this.candidates[cellId] = newValue;
+        this.set.add([bitCount(newValue), cellId]);
+    }
+
+    addCandidate(cellId: number, candidate: number) {
+        if (this.candidates[cellId] < 0) return;
+        if (bitContains(this.candidates[cellId], candidate)) {
+            return;
+        }
+        this.setCandidate(cellId, this.candidates[cellId] + (1 << candidate));
+    }
+
+    removeCandidate(cellId: number, candidate: number) {
+        if (this.candidates[cellId] < 0) return;
+        if (!bitContains(this.candidates[cellId], candidate)) {
+            return;
+        }
+        this.setCandidate(cellId, this.candidates[cellId] - (1 << candidate));
+    }
+
+    removeCell(cellId: number) {
+        if (this.candidates[cellId] < 0) return;
+
+        this.set.remove([bitCount(this.candidates[cellId]), cellId]);
+        this.candidates[cellId] = -1;
+    }
+};
 
 // Input:
 // - sum = sandwich sum for this row / column.
@@ -97,7 +186,13 @@ const getValidSandwichValues = (sum: number, values: Array<number>): [Set<number
 
 // Assumption: we have just filled number in cell (rowId, colId).
 // We want to use sandwich clue in that row / column to eliminiate some candidates.
-const applySandwichClues = (board: BoardModel, rowId: number, colId: number, values: Array<number>, candidates: Array<number>): void => {
+const applySandwichClues = (
+        board: BoardModel,
+        rowId: number,
+        colId: number,
+        values: Array<number>,
+        candidateStore: CandidateStore
+        ): void => {
     // For row.
     if (board.rowSandwich[rowId].value !== null) {
         const row = getRowValues(rowId, values);
@@ -114,7 +209,7 @@ const applySandwichClues = (board: BoardModel, rowId: number, colId: number, val
                         const cellId = toCellId(rowId, i);
                         if ((inside && !insides.has(value))
                                 || (!inside && !outsides.has(value))) {
-                            candidates[cellId] = bitRemoveIfExists(candidates[cellId], value);
+                            candidateStore.removeCandidate(cellId, value);
                         }
                     }
                 }
@@ -128,8 +223,8 @@ const applySandwichClues = (board: BoardModel, rowId: number, colId: number, val
                 if (row[i] === 0) {
                     if (!possibleLens.has(Math.abs(i - indexOf19) - 1)) {
                         const cellId = toCellId(rowId, i);
-                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 1);
-                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 9);
+                        candidateStore.removeCandidate(cellId, 1);
+                        candidateStore.removeCandidate(cellId, 9);
                     }
                 }
             }
@@ -152,7 +247,7 @@ const applySandwichClues = (board: BoardModel, rowId: number, colId: number, val
                         const cellId = toCellId(i, colId);
                         if ((inside && !insides.has(value))
                                 || (!inside && !outsides.has(value))) {
-                            candidates[cellId] = bitRemoveIfExists(candidates[cellId], value);
+                            candidateStore.removeCandidate(cellId, value);
                         }
                     }
                 }
@@ -166,8 +261,8 @@ const applySandwichClues = (board: BoardModel, rowId: number, colId: number, val
                 if (col[i] === 0) {
                     if (!possibleLens.has(Math.abs(i - indexOf19) - 1)) {
                         const cellId = toCellId(i, colId);
-                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 1);
-                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 9);
+                        candidateStore.removeCandidate(cellId, 1);
+                        candidateStore.removeCandidate(cellId, 9);
                     }
                 }
             }
@@ -183,59 +278,61 @@ const applySandwichClues = (board: BoardModel, rowId: number, colId: number, val
 // Return: array of 2 elements:
 // - First element is either a solution or null
 // - Number of solutions we find. We always break at >= 2 solutions.
-const attempt = (board: BoardModel, control: ControlModel, values: Array<number>, candidates: Array<number>): [BoardModel | null, number] => {
+const attempt = (
+        board: BoardModel,
+        control: ControlModel,
+        values: Array<number>,
+        candidateStore: CandidateStore,
+        ): [BoardModel | null, number] => {
+    
     // Find cell with minimum number of candidates.
-    let bestId = -1;
-    for (let i = 0; i < 81; i++) {
-        if (values[i] === 0) {
-            if (bestId < 0 || bitCount(values[i]) < bitCount(values[bestId])) {
-                bestId = i;
-            }
-        }
+    let [cntCandidates, cellId] = candidateStore.getBestCell();
+
+    if (cntCandidates === 0) {
+        return [null, 0];
     }
-    if (bestId < 0) {
-        // No more unfilled cell --> we have found a solution.
+    if (cntCandidates < 0) {
         let solution = _.cloneDeep(board);
         for (let i = 0; i < 81; i++) {
+            if (values[i] === 0) {
+                throw new Error(`Invalid state: cannot find a value for cell ID ${i}`);
+            }
             solution.setValueOfSingleCell(i, String.fromCharCode(48 + values[i]) as CellValue, control.gameOptions, false);
         }
         return [solution, 1];
     }
 
-    if (bitCount(candidates[bestId]) === 0) {
-        return [null, 0];
-    }
-
     let firstSolution = null;
     let cntSolutions = 0;
-    for (let value = 1; value <= 9; value++) {
-        if (bitContains(candidates[bestId], value)) {
-            const saveValues = _.clone(values);
-            const saveCandidates = _.clone(candidates);
 
-            values[bestId] = value;
-            const neighborIds = board.getVisibleCells(bestId, control.gameOptions);
-            for (let neighborId of neighborIds) {
-                candidates[neighborId] = bitRemoveIfExists(candidates[neighborId], value);
-            };
-            if (control.gameOptions.sandwich) {
-                applySandwichClues(board, toRowId(bestId), toColId(bestId), values, candidates);
-            }
+    let candidates = candidateStore.getCandidates(cellId);
+    for (let value of candidates) {
+        const saveValues = _.clone(values);
+        const saveCandidates = _.clone(candidateStore.candidates);
 
-            let [solution, cnt] = attempt(board, control, values, candidates);
-            if (cnt > 0) {
-                if (firstSolution === null) {
-                    firstSolution = solution;
-                }
-                cntSolutions += cnt;
-                if (cntSolutions >= 2) {
-                    break;
-                }
-            }
-
-            values = saveValues;
-            candidates = saveCandidates;
+        values[cellId] = value;
+        candidateStore.removeCell(cellId);
+        const neighborIds = board.getVisibleCells(cellId, control.gameOptions);
+        for (let neighborId of neighborIds) {
+            candidateStore.removeCandidate(neighborId, value);
+        };
+        if (control.gameOptions.sandwich) {
+            applySandwichClues(board, toRowId(cellId), toColId(cellId), values, candidateStore);
         }
+
+        let [solution, cnt] = attempt(board, control, values, candidateStore);
+        if (cnt > 0) {
+            if (firstSolution === null) {
+                firstSolution = solution;
+            }
+            cntSolutions += cnt;
+            if (cntSolutions >= 2) {
+                break;
+            }
+        }
+
+        values = saveValues;
+        candidateStore = new CandidateStore(saveCandidates);
     }
     return [firstSolution, cntSolutions];
 };
@@ -249,7 +346,12 @@ const attempt = (board: BoardModel, control: ControlModel, values: Array<number>
 // Return: array of 2 elements:
 // - First element is either a solution or null
 // - Number of solutions we find. We always break at >= 2 solutions.
-const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array<number>, candidates: Array<number>): [BoardModel | null, number] => {
+const attemptSandwich = (
+        board: BoardModel,
+        control: ControlModel,
+        values: Array<number>,
+        candidateStore: CandidateStore
+        ): [BoardModel | null, number] => {
     // Find row / column with least number of candidates for 1/9.
     let bestCount = 1000;
     let isRow = false;
@@ -263,9 +365,8 @@ const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array
             for (let col = 0; col < 9; col++) {
                 const cellId = toCellId(i, col);
                 if (values[cellId] === 0) {
-                    const candidate = candidates[cellId];
-                    if (bitContains(candidate, 1)) cnt1 += 1;
-                    if (bitContains(candidate, 9)) cnt9 += 1;
+                    if (candidateStore.hasCandidate(cellId, 1)) cnt1 += 1;
+                    if (candidateStore.hasCandidate(cellId, 9)) cnt9 += 1;
                 }
             }
             if (cnt1 > 0 && cnt1 < bestCount) {
@@ -288,9 +389,8 @@ const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array
             for (let row = 0; row < 9; row++) {
                 const cellId = toCellId(row, i);
                 if (values[cellId] === 0) {
-                    const candidate = candidates[cellId];
-                    if (bitContains(candidate, 1)) cnt1 += 1;
-                    if (bitContains(candidate, 9)) cnt9 += 1;
+                    if (candidateStore.hasCandidate(cellId, 1)) cnt1 += 1;
+                    if (candidateStore.hasCandidate(cellId, 9)) cnt9 += 1;
                 }
             }
             if (cnt1 > 0 && cnt1 < bestCount) {
@@ -310,7 +410,7 @@ const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array
 
     if (bestId < 0) {
         // No row / column with sandwich clue has missing 1/9.
-        return attempt(board, control, values, candidates);
+        return attempt(board, control, values, candidateStore);
     }
 
     let firstSolution = null;
@@ -318,19 +418,19 @@ const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array
     for (let i = 0; i < 9; i++) {
         const cellId = isRow ? toCellId(bestId, i) : toCellId(i, bestId);
 
-        if (values[cellId] === 0 && bitContains(candidates[cellId], oneOrNine)) {
+        if (values[cellId] === 0 && candidateStore.hasCandidate(cellId, oneOrNine)) {
             const saveValues = _.clone(values);
-            const saveCandidates = _.clone(candidates);
+            const saveCandidates = _.clone(candidateStore.candidates);
 
             values[cellId] = oneOrNine;
             const neighborIds = board.getVisibleCells(cellId, control.gameOptions);
             for (let neighborId of neighborIds) {
-                candidates[neighborId] = bitRemoveIfExists(candidates[neighborId], oneOrNine);
+                candidateStore.removeCandidate(neighborId, oneOrNine)
             };
             if (control.gameOptions.sandwich) {
-                applySandwichClues(board, toRowId(cellId), toColId(cellId), values, candidates);
+                applySandwichClues(board, toRowId(cellId), toColId(cellId), values, candidateStore);
             }
-            let [solution, cnt] = attemptSandwich(board, control, values, candidates);
+            let [solution, cnt] = attemptSandwich(board, control, values, candidateStore);
             if (cnt > 0) {
                 if (firstSolution === null) {
                     firstSolution = solution;
@@ -342,7 +442,7 @@ const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array
             }
 
             values = saveValues;
-            candidates = saveCandidates;
+            candidateStore = new CandidateStore(saveCandidates);
         }
     }
     return [firstSolution, cntSolutions];
@@ -357,6 +457,9 @@ export const solveBoard = (board: BoardModel, control: ControlModel): [BoardMode
         else return +cell.value;
     });
     let candidates = newBoard.cells.map(cell => {
+        if (cell.value !== null) {
+            return 0;
+        }
         let mask = 0;
         for (let value of cell.centerValues) {
             if (value !== null) {
@@ -376,24 +479,14 @@ export const solveBoard = (board: BoardModel, control: ControlModel): [BoardMode
                 return [null, 0];
             }
         }
+        let candidateStore = new CandidateStore(candidates);
         for (let i = 0; i < 81; i++) {
             if (values[i] > 0) {
-                applySandwichClues(newBoard, toRowId(i), toColId(i), values, candidates);
+                applySandwichClues(newBoard, toRowId(i), toColId(i), values, candidateStore);
             }
         }
-        for (let i = 0; i < 81; i++) {
-            if (values[i] > 0) {
-                newBoard.cells[i].value = String(values[i]) as CellValue;
-            }
-            newBoard.cells[i].centerValues.clear();
-            for (let value = 1; value <= 9; value++) {
-                if (bitContains(candidates[i], value)) {
-                    newBoard.cells[i].centerValues.add(String(value) as CellValue);
-                }
-            }
-        }
-        return attemptSandwich(newBoard, control, values, candidates);
+        return attemptSandwich(newBoard, control, values, candidateStore);
     }
 
-    return attempt(newBoard, control, values, candidates);
+    return attempt(newBoard, control, values, new CandidateStore(candidates));
 };
