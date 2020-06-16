@@ -6,7 +6,7 @@ Dependencies: nodejs.
 
 `npm start`
 
-Runs the app in local at [http://localhost:3000](http://localhost:3000).
+Runs the app in local at [http://localhost:3000/sudoku](http://localhost:3000/sudoku).
 
 The app will reload automatically when code changes.
 

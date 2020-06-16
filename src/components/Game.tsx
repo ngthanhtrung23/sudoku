@@ -42,7 +42,7 @@ class Game extends React.Component<GameProps, GameState> {
                 className="container"
                 onMouseUp={() => this.props.mouseUp(this.props.board)}
             >
-                <h1>Sudoku Tool</h1>
+                <h1><a href="/sudoku">Sudoku Tool</a></h1>
                 <div className="row">
                     <div className="col-sm">
                         <Board
