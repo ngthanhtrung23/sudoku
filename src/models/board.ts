@@ -300,7 +300,7 @@ class BoardModel {
             .forEach(cell => { cell.value = null });
         
         [...this.rowSandwich, ...this.colSandwich]
-            .filter(cell => cell.selected)
+            .filter(cell => cell.selected && !cell.isFixed)
             .forEach(cell => { cell.value = null });
     }
 

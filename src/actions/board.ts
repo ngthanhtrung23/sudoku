@@ -182,7 +182,7 @@ const setSandwichValue = (board: BoardModel, newValue: number): ActionTypes => {
 
     newBoard.clearAllErrors();
     [...newBoard.rowSandwich, ...newBoard.colSandwich]
-        .filter(cell => cell.selected)
+        .filter(cell => cell.selected && !cell.isFixed)
         .forEach(cell => {
             if (cell.value === null) cell.value = newValue;
             else if (cell.value < 10) cell.value = cell.value * 10 + newValue;
