@@ -24,8 +24,8 @@ class BoardModel {
         this.rowSandwich = [];
         this.colSandwich = [];
         for (let i = 0; i < 9; i++) {
-            this.rowSandwich.push(new SandwichCellModel());
-            this.colSandwich.push(new SandwichCellModel());
+            this.rowSandwich.push(new SandwichCellModel(`row-${i}`));
+            this.colSandwich.push(new SandwichCellModel(`col-${i}`));
         }
     }
 

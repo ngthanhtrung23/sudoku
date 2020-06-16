@@ -1,13 +1,42 @@
 import React from 'react';
+import { QuestionSquare } from 'react-bootstrap-icons';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { connect, ConnectedProps } from 'react-redux';
 import { SandwichCellModel } from '../../models/sandwichCell';
+import { sumToSeqs } from '../../utils/sandwich';
+import { GameState } from '../Game';
 
-
-type SandwichCellProps = {
-    value: SandwichCellModel,
-    onClick: (e: any) => void,
-};
 
 class SandwichCell extends React.Component<SandwichCellProps> {
+    renderSandwichHint() {
+        if (!this.props.sandwichHint || this.props.value.value === null || this.props.value.value === 0) {
+            return;
+        }
+
+        const seqs = sumToSeqs[this.props.value.value].map((seq: Array<number>) => {
+            return (
+                <div>
+                    {seq.join(' ')}
+                </div>
+            );
+        });
+        const tooltip = (
+            <Tooltip id={`tooltip-sandwich-${this.props.value.id}`}>
+                <div>{seqs}</div>
+            </Tooltip>
+        );
+        return (
+            <div className="cell-corner-value">
+                <OverlayTrigger
+                    placement="left"
+                    overlay={tooltip}>
+                    <QuestionSquare />
+                </OverlayTrigger>
+            </div>
+        );
+    }
+
     render() {
         let defaultValue = (this.props.value.value === null) ? undefined : this.props.value.value;
 
@@ -20,16 +49,31 @@ class SandwichCell extends React.Component<SandwichCellProps> {
         if (this.props.value.error) {
             classes.push('error');
         }
+
         return (
             <div
                 onClick={this.props.onClick}
-                className={classes.join(' ')}>
+                className={classes.join(' ')}
+            >
                 <div className="cell-main-value">
                     {defaultValue}
                 </div>
+                {this.renderSandwichHint()}
             </div>
         );
     }
 }
 
-export default SandwichCell;
+const mapStateToProps = (state: GameState) => {
+    return {
+        sandwichHint: state.control.displayOptions.sandwichHint,
+    };
+};
+
+const connector = connect(mapStateToProps);
+type SandwichCellProps = ConnectedProps<typeof connector> & {
+    value: SandwichCellModel,
+    onClick: (e: any) => void,
+}
+
+export default connector(SandwichCell);

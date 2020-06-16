@@ -3,8 +3,10 @@ export class SandwichCellModel {
     selected: boolean;
     error: boolean;
     isFixed: boolean;
+    id: string;
 
-    constructor() {
+    constructor(id: string) {
+        this.id = id;
         this.value = null;
         this.selected = false;
         this.error = false;

@@ -1,11 +1,29 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { connect, ConnectedProps } from 'react-redux';
-
 import { updateDisplay } from '../../actions/control';
 import { GameState } from '../Game';
 
+
 class DisplayOptions extends React.Component<DisplayOptionsProps> {
+    renderSandwichDisplayOptions() {
+        if (this.props.sandwich) {
+            return (
+                <Form.Check
+                    type='checkbox'
+                    id='checkbox-sandwich-hint'
+                    label='Show Sandwich sum hints'
+                    checked={this.props.sandwichHint}
+                    onChange={() => this.props.updateDisplay({
+                        ...this.props,
+                        sandwichHint: !this.props.sandwichHint
+                    })}
+                />
+            );
+        }
+        return null;
+    }
+
     render() {
         return (
             <div id="display-options">
@@ -40,13 +58,14 @@ class DisplayOptions extends React.Component<DisplayOptionsProps> {
                         autoCleanUp: !this.props.autoCleanUp
                     })}
                 />
+                {this.renderSandwichDisplayOptions()}
             </div>
         );
     }
 }
 
 const mapStateToProps = (state: GameState) => {
-    return {...state.control.displayOptions};
+    return {...state.control.displayOptions, ...state.control.gameOptions};
 };
 
 const connector = connect(mapStateToProps, { updateDisplay });

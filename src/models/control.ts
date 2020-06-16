@@ -8,6 +8,7 @@ export type DisplayOptions = {
     highlightRestricted: boolean;
     highlightMatchingNumbers: boolean;
     autoCleanUp: boolean;
+    sandwichHint: boolean;
 };
 
 export class ControlModel {
@@ -19,6 +20,7 @@ export class ControlModel {
             highlightRestricted: true,
             highlightMatchingNumbers: false,
             autoCleanUp: false,
+            sandwichHint: false,
         };
         this.gameOptions = {
             antiKnight: false,
