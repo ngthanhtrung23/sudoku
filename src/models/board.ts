@@ -29,9 +29,11 @@ class BoardModel {
         }
     }
 
+    // Used for maintaining board history.
     serialize(): string {
         let result: Array<{
             value: CellValue;
+            fixed: boolean | null;
             cornerValues: Array<CellValue>;
             centerValues: Array<CellValue>;
         }> = [];
@@ -39,23 +41,40 @@ class BoardModel {
         this.cells.forEach((cell) => {
             result.push({
                 value: cell.value,
+                fixed: cell.isFixed,
                 cornerValues: Array.from(cell.cornerValues),
                 centerValues: Array.from(cell.centerValues),
             });
         });
-        return JSON.stringify(result);
+        let obj = {
+            cells: result,
+            rowSandwiches: this.rowSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed }; }),
+            colSandwiches: this.colSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed }; }),
+        };
+        return JSON.stringify(obj);
     }
 
+    // Used for maintaining board history.
     load(serialized: string): void {
         this.clearAllErrors();
         this.clearAllRestricteds();
         this.clearAllSelections();
 
-        let obj = JSON.parse(serialized);
+        const deserialized = JSON.parse(serialized);
+        const cells = deserialized.cells;
         for (let i = 0; i < 81; i++) {
-            this.cells[i].value = obj[i].value;
-            this.cells[i].cornerValues = new Set(obj[i].cornerValues);
-            this.cells[i].centerValues = new Set(obj[i].centerValues);
+            this.cells[i].value = cells[i].value;
+            this.cells[i].isFixed = cells[i].fixed;
+            this.cells[i].cornerValues = new Set(cells[i].cornerValues);
+            this.cells[i].centerValues = new Set(cells[i].centerValues);
+        }
+
+        for (let i = 0; i < 9; i++) {
+            this.rowSandwich[i].value = deserialized.rowSandwiches[i].value;
+            this.rowSandwich[i].isFixed = deserialized.rowSandwiches[i].fixed;
+
+            this.colSandwich[i].value = deserialized.colSandwiches[i].value;
+            this.colSandwich[i].isFixed = deserialized.colSandwiches[i].fixed;
         }
     }
 
