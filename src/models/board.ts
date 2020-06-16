@@ -199,14 +199,20 @@ class BoardModel {
         return sum;
     }
 
+    getRowValues(rowId: number): Array<CellValue> {
+        return this.cells.slice(rowId * 9, rowId * 9 + 9).map(cell => cell.value);
+    }
+
+    getColValues(colId: number): Array<CellValue> {
+        return this.cells.filter(cell => cell.id % 9 === colId).map(cell => cell.value);
+    }
+
     getRowSandwichSum(rowId: number): number | null {
-        const row = this.cells.slice(rowId * 9, rowId * 9 + 9).map(cell => cell.value);
-        return this.getSandwichSum(row);
+        return this.getSandwichSum(this.getRowValues(rowId));
     }
 
     getColSandwichSum(colId: number): number | null {
-        const col = this.cells.filter(cell => cell.id % 9 === colId).map(cell => cell.value);
-        return this.getSandwichSum(col);
+        return this.getSandwichSum(this.getColValues(colId));
     }
 
     setSelected(cellId: number): void {

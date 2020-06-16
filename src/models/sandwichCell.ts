@@ -14,6 +14,7 @@ export class SandwichCellModel {
     isValid(): boolean {
         return this.value === null
             || this.value === 0
-            || (2 <= this.value && this.value <= 35);
+            || this.value === 35
+            || (2 <= this.value && this.value <= 33);
     }
 };

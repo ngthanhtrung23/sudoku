@@ -2,24 +2,187 @@ import _ from 'lodash';
 import { BoardModel } from '../models/board';
 import { CellValue } from '../models/cell';
 import { ControlModel } from '../models/control';
+import { bitContains, bitCount, bitRemoveIfExists } from './bits';
+import { sandwichLengths, sumToSeqs } from './sandwich';
 
-const bitCount = (n: number): number => {
-    n = n - ((n >> 1) & 0x55555555)
-    n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
-    return ((n + (n >> 4) & 0xF0F0F0F) * 0x1010101) >> 24
+const toRowId = (cellId: number) => {
+    return ~~(cellId / 9);
+};
+const toColId = (cellId: number) => {
+    return cellId % 9;
+};
+const toCellId = (rowId: number, colId: number) => {
+    return rowId * 9 + colId;
+};
+
+const getRowValues = (rowId: number, values: Array<number>): Array<number> => {
+    return values.slice(rowId * 9, rowId * 9 + 9);
 }
 
-const bitContains = (n: number, bit: number): boolean => {
-    return ((n >> bit) & 1) > 0;
-}
-
-const bitRemoveIfExists = (n: number, bit: number): number => {
-    if (!bitContains(n, bit)) {
-        return n;
+const getColValues = (colId: number, values: Array<number>): Array<number> => {
+    let res = [];
+    for (let i = colId; i < 81; i += 9) {
+        res.push(values[i]);
     }
-    return n - (1<<bit);
+    return res;
 }
 
+// Input:
+// - sum = sandwich sum for this row / column.
+// - values = numbers in this row / column. If missing --> 0.
+//
+// Return:
+// - Set of possible values inside sandwich,
+// - Set of possible values outside sandwich.
+const getValidSandwichValues = (sum: number, values: Array<number>): [Set<number>, Set<number>] => {
+    if (sum === 0) {
+        return [new Set(), new Set([1, 2, 3, 4, 5, 6, 7, 8, 9])];
+    }
+
+    let left = values.indexOf(1);
+    let right = values.indexOf(9);
+    if (left > right) {
+        [left, right] = [right, left];
+    }
+    const len = right - left - 1;
+
+    // What we know about the seqs
+    let mustHave: Set<number> = new Set();
+    let mustNot: Set<number> = new Set();
+    let inside = false;
+    for (let value of values) {
+        if (value === 0) continue;
+
+        if (value === 1 || value === 9) {
+            inside = !inside;
+        } else {
+            if (inside) mustHave.add(value);
+            else mustNot.add(value);
+        }
+    }
+
+    // Check all seqs with this sum.
+    let insides: Set<number> = new Set();
+    let outsides: Set<number> = new Set();
+    for (let seq of sumToSeqs[sum]) {
+        const seq_set = new Set(seq);
+        let can = true;
+        if (seq.length !== len) {
+            can = false;
+        }
+        for (let value of mustHave) {
+            if (!seq_set.has(value)) {
+                can = false;
+                break;
+            }
+        }
+        for (let value of mustNot) {
+            if (seq_set.has(value)) {
+                can = false;
+                break;
+            }
+        }
+        if (can) {
+            for (let value = 1; value <= 9; value++) {
+                if (seq_set.has(value)) {
+                    insides.add(value);
+                } else {
+                    outsides.add(value);
+                }
+            }
+        }
+    }
+    return [insides, outsides];
+}
+
+// Assumption: we have just filled number in cell (rowId, colId).
+// We want to use sandwich clue in that row / column to eliminiate some candidates.
+const applySandwichClues = (board: BoardModel, rowId: number, colId: number, values: Array<number>, candidates: Array<number>): void => {
+    // For row.
+    if (board.rowSandwich[rowId].value !== null) {
+        const row = getRowValues(rowId, values);
+        const sandwichSum: number = board.rowSandwich[rowId].value as number;
+
+        if (row.indexOf(1) >= 0 && row.indexOf(9) >= 0) {
+            const [insides, outsides] = getValidSandwichValues(sandwichSum, row);
+            let inside = false;
+            for (let i = 0; i < 9; i++) {
+                if (row[i] === 1 || row[i] === 9) {
+                    inside = !inside;
+                } else if (row[i] === 0) {
+                    for (let value = 1; value <= 9; value++) {
+                        const cellId = toCellId(rowId, i);
+                        if ((inside && !insides.has(value))
+                                || (!inside && !outsides.has(value))) {
+                            candidates[cellId] = bitRemoveIfExists(candidates[cellId], value);
+                        }
+                    }
+                }
+            }
+        } else if (row.indexOf(1) >= 0 || row.indexOf(9) >= 0) {
+            let indexOf19 = row.indexOf(1);
+            if (indexOf19 < 0) indexOf19 = row.indexOf(9);
+
+            const possibleLens = new Set(sandwichLengths[sandwichSum]);
+            for (let i = 0; i < 9; i++) {
+                if (row[i] === 0) {
+                    if (!possibleLens.has(Math.abs(i - indexOf19) - 1)) {
+                        const cellId = toCellId(rowId, i);
+                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 1);
+                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 9);
+                    }
+                }
+            }
+        }
+    }
+
+    // For column.
+    if (board.colSandwich[colId].value !== null) {
+        const col = getColValues(colId, values);
+        const sandwichSum: number = board.colSandwich[colId].value as number;
+
+        if (col.indexOf(1) >= 0 && col.indexOf(9) >= 0) {
+            const [insides, outsides] = getValidSandwichValues(sandwichSum, col);
+            let inside = false;
+            for (let i = 0; i < 9; i++) {
+                if (col[i] === 1 || col[i] === 9) {
+                    inside = !inside;
+                } else if (col[i] === 0) {
+                    for (let value = 1; value <= 9; value++) {
+                        const cellId = toCellId(i, colId);
+                        if ((inside && !insides.has(value))
+                                || (!inside && !outsides.has(value))) {
+                            candidates[cellId] = bitRemoveIfExists(candidates[cellId], value);
+                        }
+                    }
+                }
+            }
+        } else if (col.indexOf(1) >= 0 || col.indexOf(9) >= 0) {
+            let indexOf19 = col.indexOf(1);
+            if (indexOf19 < 0) indexOf19 = col.indexOf(9);
+
+            const possibleLens = new Set(sandwichLengths[sandwichSum]);
+            for (let i = 0; i < 9; i++) {
+                if (col[i] === 0) {
+                    if (!possibleLens.has(Math.abs(i - indexOf19) - 1)) {
+                        const cellId = toCellId(i, colId);
+                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 1);
+                        candidates[cellId] = bitRemoveIfExists(candidates[cellId], 9);
+                    }
+                }
+            }
+        }
+    }
+};
+
+// Input:
+// - board, control: model instances, so that we can get visible cells of a cell.
+// - values: array with length 9*9, representing the filled values board.
+// - candidates: array with length 9*9, where each element is a bitmask representing possible values for that cell.
+// 
+// Return: array of 2 elements:
+// - First element is either a solution or null
+// - Number of solutions we find. We always break at >= 2 solutions.
 const attempt = (board: BoardModel, control: ControlModel, values: Array<number>, candidates: Array<number>): [BoardModel | null, number] => {
     // Find cell with minimum number of candidates.
     let bestId = -1;
@@ -55,6 +218,9 @@ const attempt = (board: BoardModel, control: ControlModel, values: Array<number>
             for (let neighborId of neighborIds) {
                 candidates[neighborId] = bitRemoveIfExists(candidates[neighborId], value);
             };
+            if (control.gameOptions.sandwich) {
+                applySandwichClues(board, toRowId(bestId), toColId(bestId), values, candidates);
+            }
 
             let [solution, cnt] = attempt(board, control, values, candidates);
             if (cnt > 0) {
@@ -91,5 +257,35 @@ export const solveBoard = (board: BoardModel, control: ControlModel): [BoardMode
         }
         return mask;
     });
+
+    // Use sandwich clues for filled cells.
+    if (control.gameOptions.sandwich) {
+        for (let i = 0; i < 9; i++) {
+            if (!newBoard.rowSandwich[i].isValid()) {
+                return [null, 0];
+            }
+            if (!newBoard.colSandwich[i].isValid()) {
+                return [null, 0];
+            }
+        }
+        for (let i = 0; i < 81; i++) {
+            if (values[i] > 0) {
+                applySandwichClues(newBoard, toRowId(i), toColId(i), values, candidates);
+            }
+        }
+        for (let i = 0; i < 81; i++) {
+            if (values[i] > 0) {
+                newBoard.cells[i].value = String(values[i]) as CellValue;
+            }
+            newBoard.cells[i].centerValues.clear();
+            for (let value = 1; value <= 9; value++) {
+                if (bitContains(candidates[i], value)) {
+                    newBoard.cells[i].centerValues.add(String(value) as CellValue);
+                }
+            }
+        }
+        return [newBoard, 1];
+    }
+
     return attempt(newBoard, control, values, candidates);
 };

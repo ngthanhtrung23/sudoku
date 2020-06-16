@@ -73,9 +73,6 @@ export const verify = (board: BoardModel, control: ControlModel): ActionTypes =>
 }
 
 export const solve = (board: BoardModel, control: ControlModel): ActionTypes => {
-    if (control.gameOptions.sandwich) {
-        alert('Cannot solve Sandwich Sudoku.');
-    }
     let [newBoard, cntSolutions] = solveBoard(board, control);
     if (cntSolutions >= 2) {
         alert('Found at least ' + cntSolutions + ' solutions.');
