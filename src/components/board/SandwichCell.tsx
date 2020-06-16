@@ -14,9 +14,9 @@ class SandwichCell extends React.Component<SandwichCellProps> {
             return;
         }
 
-        const seqs = sumToSeqs[this.props.value.value].map((seq: Array<number>) => {
+        const seqs = sumToSeqs[this.props.value.value].map((seq: Array<number>, index: number) => {
             return (
-                <div>
+                <div key={`tooltip-sandwich-${this.props.value.id}-${index}`}>
                     {seq.join(' ')}
                 </div>
             );
@@ -27,9 +27,9 @@ class SandwichCell extends React.Component<SandwichCellProps> {
             </Tooltip>
         );
         return (
-            <div className="cell-corner-value">
+            <div className="sandwich-corner-value">
                 <OverlayTrigger
-                    placement="left"
+                    placement="right"
                     overlay={tooltip}>
                     <QuestionSquare />
                 </OverlayTrigger>
