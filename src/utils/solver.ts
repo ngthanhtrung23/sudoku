@@ -240,6 +240,114 @@ const attempt = (board: BoardModel, control: ControlModel, values: Array<number>
     return [firstSolution, cntSolutions];
 };
 
+// Input:
+// - board: A Sandwich Sudoku board.
+// - control: ControlModel instance.
+// - values: array with length 9*9, representing the filled values board.
+// - candidates: array with length 9*9, where each element is a bitmask representing possible values for that cell.
+//
+// Return: array of 2 elements:
+// - First element is either a solution or null
+// - Number of solutions we find. We always break at >= 2 solutions.
+const attemptSandwich = (board: BoardModel, control: ControlModel, values: Array<number>, candidates: Array<number>): [BoardModel | null, number] => {
+    // Find row / column with least number of candidates for 1/9.
+    let bestCount = 1000;
+    let isRow = false;
+    let bestId = -1;
+    let oneOrNine = 1;
+    for (let i = 0; i < 9; i++) {
+        // row
+        if (board.rowSandwich[i].value !== null) {
+            let cnt1 = 0;
+            let cnt9 = 0;
+            for (let col = 0; col < 9; col++) {
+                const cellId = toCellId(i, col);
+                if (values[cellId] === 0) {
+                    const candidate = candidates[cellId];
+                    if (bitContains(candidate, 1)) cnt1 += 1;
+                    if (bitContains(candidate, 9)) cnt9 += 1;
+                }
+            }
+            if (cnt1 > 0 && cnt1 < bestCount) {
+                bestCount = cnt1;
+                isRow = true;
+                bestId = i;
+                oneOrNine = 1;
+            }
+            if (cnt9 > 0 && cnt9 < bestCount) {
+                bestCount = cnt9;
+                isRow = true;
+                bestId = i;
+                oneOrNine = 9;
+            }
+        }
+        // col
+        if (board.colSandwich[i].value !== null) {
+            let cnt1 = 0;
+            let cnt9 = 0;
+            for (let row = 0; row < 9; row++) {
+                const cellId = toCellId(row, i);
+                if (values[cellId] === 0) {
+                    const candidate = candidates[cellId];
+                    if (bitContains(candidate, 1)) cnt1 += 1;
+                    if (bitContains(candidate, 9)) cnt9 += 1;
+                }
+            }
+            if (cnt1 > 0 && cnt1 < bestCount) {
+                bestCount = cnt1;
+                isRow = false;
+                bestId = i;
+                oneOrNine = 1;
+            }
+            if (cnt9 > 0 && cnt9 < bestCount) {
+                bestCount = cnt9;
+                isRow = false;
+                bestId = i;
+                oneOrNine = 9;
+            }
+        }
+    }
+
+    if (bestId < 0) {
+        // No row / column with sandwich clue has missing 1/9.
+        return attempt(board, control, values, candidates);
+    }
+
+    let firstSolution = null;
+    let cntSolutions = 0;
+    for (let i = 0; i < 9; i++) {
+        const cellId = isRow ? toCellId(bestId, i) : toCellId(i, bestId);
+
+        if (values[cellId] === 0 && bitContains(candidates[cellId], oneOrNine)) {
+            const saveValues = _.clone(values);
+            const saveCandidates = _.clone(candidates);
+
+            values[cellId] = oneOrNine;
+            const neighborIds = board.getVisibleCells(cellId, control.gameOptions);
+            for (let neighborId of neighborIds) {
+                candidates[neighborId] = bitRemoveIfExists(candidates[neighborId], oneOrNine);
+            };
+            if (control.gameOptions.sandwich) {
+                applySandwichClues(board, toRowId(cellId), toColId(cellId), values, candidates);
+            }
+            let [solution, cnt] = attemptSandwich(board, control, values, candidates);
+            if (cnt > 0) {
+                if (firstSolution === null) {
+                    firstSolution = solution;
+                }
+                cntSolutions += cnt;
+                if (cntSolutions >= 2) {
+                    break;
+                }
+            }
+
+            values = saveValues;
+            candidates = saveCandidates;
+        }
+    }
+    return [firstSolution, cntSolutions];
+}
+
 export const solveBoard = (board: BoardModel, control: ControlModel): [BoardModel | null, number] => {
     let newBoard = _.cloneDeep(board);
     newBoard.fillAllPossibleValues(control.gameOptions);
@@ -284,7 +392,7 @@ export const solveBoard = (board: BoardModel, control: ControlModel): [BoardMode
                 }
             }
         }
-        return [newBoard, 1];
+        return attemptSandwich(newBoard, control, values, candidates);
     }
 
     return attempt(newBoard, control, values, candidates);
