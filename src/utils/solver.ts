@@ -413,6 +413,12 @@ const attemptSandwich = (
         return attempt(board, control, values, candidateStore);
     }
 
+    // Check whether some cells have become invalid.
+    let cntCandidates = candidateStore.getBestCell()[0];
+    if (cntCandidates === 0) {
+        return [null, 0];
+    }
+
     let firstSolution = null;
     let cntSolutions = 0;
     for (let i = 0; i < 9; i++) {
