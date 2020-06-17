@@ -114,8 +114,10 @@ class Cell extends React.Component<CellProps> {
         } else if (this.props.cell.error) {
             classes.push('error');
         }
+
+        let innerClasses = ["cell-inner"];
         if (this.props.cell.color !== null && !this.props.cell.error) {
-            classes.push(`color-${this.props.cell.color}`);
+            innerClasses.push(`color-${this.props.cell.color}`);
         }
 
         return (
@@ -128,9 +130,11 @@ class Cell extends React.Component<CellProps> {
                 onTouchMove={this.props.onMouseOver}
                 key={this.props.cell.id}
             >
-                {this.renderCellMainValue()}
-                {this.renderCellCornerValues()}
-                {this.renderCellCenterValues()}
+                <div className={innerClasses.join(' ')}>
+                    {this.renderCellMainValue()}
+                    {this.renderCellCornerValues()}
+                    {this.renderCellCenterValues()}
+                </div>
             </div>
         );
     }

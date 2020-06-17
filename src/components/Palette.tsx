@@ -18,7 +18,7 @@ class Palette extends React.Component<PaletteProps> {
         );
     }
     render() {
-        const colors = [...Array(4).keys()].map(x => this.renderColor(x));
+        const colors = [...Array(5).keys()].map(x => this.renderColor(x));
         return (
             <div className="row palette">
                 {colors}
