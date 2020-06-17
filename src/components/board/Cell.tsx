@@ -123,7 +123,9 @@ class Cell extends React.Component<CellProps> {
                 className={classes.join(' ')}
                 onClick={this.props.onClick}
                 onMouseDown={this.props.onMouseDown}
+                onTouchStart={this.props.onMouseDown}
                 onMouseOver={this.props.onMouseOver}
+                onTouchMove={this.props.onMouseOver}
                 key={this.props.cell.id}
             >
                 {this.renderCellMainValue()}

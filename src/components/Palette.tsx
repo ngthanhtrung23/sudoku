@@ -26,7 +26,7 @@ class Palette extends React.Component<PaletteProps> {
                     className="btn-secondary"
                     onClick={() => this.props.clearAllColors(this.props.board)}
                 >
-                    Clear All Colors
+                    Reset colors
                 </Button>
             </div>
         );

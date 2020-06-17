@@ -93,6 +93,9 @@
 .board-bottom {
     border-bottom: 4px solid #000;
 }
+.control {
+    margin-top: 10px;
+}
 .palette {
     margin-top: 10px;
 }

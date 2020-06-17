@@ -39,6 +39,7 @@ class Game extends React.Component<GameProps, GameState> {
                 tabIndex={0}
                 className="container"
                 onMouseUp={() => this.props.mouseUp(this.props.board)}
+                onTouchEnd={() => this.props.mouseUp(this.props.board)}
             >
                 <h1><a href="/sudoku">Sudoku Tool</a></h1>
                 <div className="row">
@@ -53,7 +54,7 @@ class Game extends React.Component<GameProps, GameState> {
                         />
                         <Palette />
                     </div>
-                    <div className="col-sm">
+                    <div className="col-sm control">
                         <Control />
                     </div>
                 </div>
