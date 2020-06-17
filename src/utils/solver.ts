@@ -429,6 +429,7 @@ const attemptSandwich = (
             const saveCandidates = _.clone(candidateStore.candidates);
 
             values[cellId] = oneOrNine;
+            candidateStore.removeCell(cellId);
             const neighborIds = board.getVisibleCells(cellId, control.gameOptions);
             for (let neighborId of neighborIds) {
                 candidateStore.removeCandidate(neighborId, oneOrNine)
