@@ -22,13 +22,13 @@ export const initGameState = (decodedState: any): ActionTypes => {
             board.cells[i].isFixed = true;
         }
     }
-    if (decodedState.rowSandwichSums !== null) {
+    if (decodedState.rowSandwichSums) {
         for (let i = 0; i < 9; i++) {
             board.rowSandwich[i].value = decodedState.rowSandwichSums[i];
             board.rowSandwich[i].isFixed = true;
         }
     }
-    if (decodedState.colSandwichSums !== null) {
+    if (decodedState.colSandwichSums) {
         for (let i = 0; i < 9; i++) {
             board.colSandwich[i].value = decodedState.colSandwichSums[i];
             board.colSandwich[i].isFixed = true;
