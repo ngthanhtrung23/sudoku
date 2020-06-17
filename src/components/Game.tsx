@@ -15,6 +15,7 @@ import { ControlModel } from '../models/control';
 import { HistoryModel } from '../models/history';
 import Board from './board/Board';
 import Control from './control/Control';
+import Palette from './Palette';
 
 
 export type GameState = {
@@ -50,6 +51,7 @@ class Game extends React.Component<GameProps, GameState> {
                             onMouseDown={(e, id) => this.props.mouseDown(this.props.board, this.props.control, id, !e.metaKey)}
                             onMouseOver={(id) => this.props.mouseOver(this.props.board, this.props.control, id)}
                         />
+                        <Palette />
                     </div>
                     <div className="col-sm">
                         <Control />

@@ -3,6 +3,23 @@ import { CellModel, CellValue } from './cell';
 import { GameOptions } from './control';
 import { SandwichCellModel } from './sandwichCell';
 
+type SerializedCell = {
+    value: CellValue;
+    fixed: boolean | null;
+    color: number | null;
+    cornerValues: Array<CellValue>;
+    centerValues: Array<CellValue>;
+};
+type SerializedSandwich = {
+    value: number | null;
+    fixed: boolean;
+};
+type Serialized = {
+    cells: Array<SerializedCell>;
+    rowSandwiches: Array<SerializedSandwich>;
+    colSandwiches: Array<SerializedSandwich>;
+};
+
 class BoardModel {
     cells: Array<CellModel>;
     highlightMatching: CellValue;
@@ -31,22 +48,18 @@ class BoardModel {
 
     // Used for maintaining board history.
     serialize(): string {
-        let result: Array<{
-            value: CellValue;
-            fixed: boolean | null;
-            cornerValues: Array<CellValue>;
-            centerValues: Array<CellValue>;
-        }> = [];
+        let result: Array<SerializedCell> = [];
 
         this.cells.forEach((cell) => {
             result.push({
                 value: cell.value,
                 fixed: cell.isFixed,
+                color: cell.color,
                 cornerValues: Array.from(cell.cornerValues),
                 centerValues: Array.from(cell.centerValues),
             });
         });
-        let obj = {
+        let obj: Serialized = {
             cells: result,
             rowSandwiches: this.rowSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed }; }),
             colSandwiches: this.colSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed }; }),
@@ -60,11 +73,12 @@ class BoardModel {
         this.clearAllRestricteds();
         this.clearAllSelections();
 
-        const deserialized = JSON.parse(serialized);
+        const deserialized = JSON.parse(serialized) as Serialized;
         const cells = deserialized.cells;
         for (let i = 0; i < 81; i++) {
             this.cells[i].value = cells[i].value;
             this.cells[i].isFixed = cells[i].fixed;
+            this.cells[i].color = cells[i].color;
             this.cells[i].cornerValues = new Set(cells[i].cornerValues);
             this.cells[i].centerValues = new Set(cells[i].centerValues);
         }
@@ -287,11 +301,15 @@ class BoardModel {
     }
 
     setValueOfSelectedCells(newValue: CellValue, gameOptions: GameOptions, autoCleanup: boolean = false): void {
-        this.cells.forEach((cell) => {
-            if (cell.selected) {
-                this.setValueOfSingleCell(cell.id, newValue, gameOptions, autoCleanup);
-            }
-        });
+        this.cells
+            .filter(cell => cell.selected)
+            .forEach(cell => this.setValueOfSingleCell(cell.id, newValue, gameOptions, autoCleanup));
+    }
+
+    colorSelectedCells(color: number): void {
+        this.cells
+            .filter(cell => cell.selected)
+            .forEach(cell => cell.color = color);
     }
 
     unsetSelectedCells(): void {

@@ -1,6 +1,5 @@
 .cell {
     width: 10%;
-    position: relative;
     flex: 0 0 auto;
     position: relative;
     box-sizing: border-box;
@@ -93,4 +92,41 @@
 }
 .board-bottom {
     border-bottom: 4px solid #000;
+}
+.palette {
+    margin-top: 10px;
+}
+.palette-cell {
+    width: 10%;
+    flex: 0 0 auto;
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    margin-right: 2px;
+}
+.palette-cell:after {
+    content: '';
+    display: block;
+    margin-top: 100%;
+}
+.color-0 {
+    background-color: white;
+}
+.color-1 {
+    background-color: #c0ff78;
+}
+.color-2 {
+    background-color: #78fff2;
+}
+.color-3 {
+    background-color: #e587ff;
+}
+.color-4 {
+    background: repeating-linear-gradient(
+    45deg,
+        #fdff7d,
+        #fdff7d 10px,
+        #fcae77 10px,
+        #fcae77 20px
+    );
 }
