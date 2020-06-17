@@ -6,7 +6,6 @@ import { ControlModel } from '../models/control';
 import { HistoryModel } from '../models/history';
 import { redo, undo } from './history';
 import {
-    ACTION_GENERATE_URL,
     ACTION_INIT_GAME_STATE,
     ACTION_UPDATE_BOARD,
     ActionTypes,
@@ -42,24 +41,6 @@ export const initGameState = (decodedState: any): ActionTypes => {
             gameOptions: decodedState.gameOptions,
         },
     }
-};
-
-export const generateUrl = (board: BoardModel, control: ControlModel): ActionTypes => {
-    const gameState = {
-        values: board.cells.map(cell => {
-            if (cell.value) return cell.value;
-            else return '0';
-        }).join(''),
-        rowSandwichSums: (control.gameOptions.sandwich) ? board.rowSandwich.map(cell => cell.value) : null,
-        colSandwichSums: (control.gameOptions.sandwich) ? board.colSandwich.map(cell => cell.value) : null,
-        gameOptions: control.gameOptions,
-    };
-    return {
-        type: ACTION_GENERATE_URL,
-        payload: {
-            url: window.location.origin + window.location.pathname + '#/' + window.btoa(JSON.stringify(gameState)),
-        },
-    };
 };
 
 export const updateBoard = (board: BoardModel): ActionTypes => {

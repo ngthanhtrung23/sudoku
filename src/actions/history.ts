@@ -1,5 +1,10 @@
-import { ACTION_REDO, ACTION_UNDO, NO_OP, ActionTypes } from './types';
 import { HistoryModel } from '../models/history';
+import {
+    ACTION_REDO,
+    ACTION_UNDO,
+    ActionTypes,
+    NO_OP
+    } from './types';
 
 
 export const redo = (history: HistoryModel): ActionTypes => {

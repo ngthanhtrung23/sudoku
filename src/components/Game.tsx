@@ -2,7 +2,6 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import {
-    generateUrl,
     initGameState,
     keyDown,
     mouseDown,
@@ -11,8 +10,6 @@ import {
     select,
     selectSandwich
     } from '../actions/board';
-import { fillCenter, solve, verify } from '../actions/control';
-import { redo, undo } from '../actions/history';
 import { BoardModel } from '../models/board';
 import { ControlModel } from '../models/control';
 import { HistoryModel } from '../models/history';
@@ -55,14 +52,7 @@ class Game extends React.Component<GameProps, GameState> {
                         />
                     </div>
                     <div className="col-sm">
-                        <Control
-                            onClickVerify={() => this.props.verify(this.props.board, this.props.control)}
-                            onClickUndo={() => this.props.undo(this.props.history)}
-                            onClickRedo={() => this.props.redo(this.props.history)}
-                            onClickFillCenters={() => this.props.fillCenter(this.props.board, this.props.control)}
-                            solve={() => this.props.solve(this.props.board, this.props.control)}
-                            generateUrl={() => this.props.generateUrl(this.props.board, this.props.control)}
-                        />
+                        <Control />
                     </div>
                 </div>
             </div>
@@ -79,24 +69,14 @@ const mapStateToProps = (state: GameState, ownProps: OwnProps) => {
 };
 
 const connector = connect(mapStateToProps, {
-    // history actions.
-    redo,
-    undo,
-
     // board actions.
     initGameState,
-    generateUrl,
     keyDown,
     mouseDown,
     mouseOver,
     mouseUp,
     select,
     selectSandwich,
-
-    // control actions.
-    fillCenter,
-    verify,
-    solve,
 });
 
 type GameProps = ConnectedProps<typeof connector>;

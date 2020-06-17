@@ -4,6 +4,7 @@ import { ControlModel, DisplayOptions, GameOptions } from '../models/control';
 import { solveBoard } from '../utils/solver';
 import { updateBoard } from './board';
 import {
+    ACTION_GENERATE_URL,
     ACTION_UPDATE_DISPLAY,
     ACTION_UPDATE_GAME_PLAY as ACTION_UPDATE_GAME_OPTIONS,
     ActionTypes,
@@ -84,3 +85,21 @@ export const solve = (board: BoardModel, control: ControlModel): ActionTypes => 
     }
     return NO_OP;
 }
+
+export const generateUrl = (board: BoardModel, control: ControlModel): ActionTypes => {
+    const gameState = {
+        values: board.cells.map(cell => {
+            if (cell.value) return cell.value;
+            else return '0';
+        }).join(''),
+        rowSandwichSums: (control.gameOptions.sandwich) ? board.rowSandwich.map(cell => cell.value) : null,
+        colSandwichSums: (control.gameOptions.sandwich) ? board.colSandwich.map(cell => cell.value) : null,
+        gameOptions: control.gameOptions,
+    };
+    return {
+        type: ACTION_GENERATE_URL,
+        payload: {
+            url: window.location.origin + window.location.pathname + '#/' + window.btoa(JSON.stringify(gameState)),
+        },
+    };
+};
