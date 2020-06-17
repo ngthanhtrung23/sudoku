@@ -1,6 +1,7 @@
 import React from 'react';
+import Button from 'react-bootstrap/Button';
 import { connect, ConnectedProps } from 'react-redux';
-import { color } from '../actions/board';
+import { clearAllColors, color } from '../actions/board';
 import { GameState } from './Game';
 
 
@@ -21,6 +22,12 @@ class Palette extends React.Component<PaletteProps> {
         return (
             <div className="row palette">
                 {colors}
+                <Button
+                    className="btn-secondary"
+                    onClick={() => this.props.clearAllColors(this.props.board)}
+                >
+                    Clear All Colors
+                </Button>
             </div>
         );
     }
@@ -32,7 +39,10 @@ const mapStateToProps = (state: GameState) => {
     };
 };
 
-const connector = connect(mapStateToProps, { color });
+const connector = connect(mapStateToProps, {
+    clearAllColors,
+    color,
+});
 
 type PaletteProps = ConnectedProps<typeof connector>;
 

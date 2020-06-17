@@ -312,6 +312,10 @@ class BoardModel {
             .forEach(cell => cell.color = color);
     }
 
+    clearAllColors(): void {
+        this.cells.forEach(cell => cell.color = null);
+    }
+
     unsetSelectedCells(): void {
         this.cells
             .filter(cell => cell.selected && !cell.isFixed)
