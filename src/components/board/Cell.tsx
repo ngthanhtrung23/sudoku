@@ -103,10 +103,7 @@ class Cell extends React.Component<CellProps> {
         }
 
         // Add highlighting class.
-        if (this.props.cell.color !== null && !this.props.cell.error) {
-            // Color should have highest priority, but we don't allow coloring error / fixed cells.
-            classes.push(`color-${this.props.cell.color}`);
-        } else if (this.props.cell.selected) {
+        if (this.props.cell.selected) {
             classes.push('selected');
         } else if (this.shouldHighlightMatching(this.props.cell.value)) {
             classes.push('matching');
@@ -116,6 +113,9 @@ class Cell extends React.Component<CellProps> {
             classes.push('fixed');
         } else if (this.props.cell.error) {
             classes.push('error');
+        }
+        if (this.props.cell.color !== null && !this.props.cell.error) {
+            classes.push(`color-${this.props.cell.color}`);
         }
 
         return (

@@ -39,8 +39,8 @@
 .matching {
     background-color: rgb(255, 150, 0);
 }
-.cell.restricted {
-    background-color: rgba(255, 190, 0, 0.5);
+.restricted {
+    background-color: #ffe49c;
 }
 .error {
     background-color: red;
@@ -115,18 +115,63 @@
 .color-1 {
     background-color: #c0ff78;
 }
+.color-1.selected {
+    background: repeating-linear-gradient(
+    45deg,
+        rgb(255, 255, 0),
+        rgb(255, 255, 0) 10px,
+        #c0ff78 10px,
+        #c0ff78 20px
+    );
+}
+.color-1.restricted {
+    background: repeating-linear-gradient(
+    45deg,
+        #ffe49c,
+        #ffe49c 10px,
+        #c0ff78 10px,
+        #c0ff78 20px
+    );
+}
 .color-2 {
     background-color: #78fff2;
+}
+.color-2.selected {
+    background: repeating-linear-gradient(
+    45deg,
+        rgb(255, 255, 0),
+        rgb(255, 255, 0) 10px,
+        #78fff2 10px,
+        #78fff2 20px
+    );
+}
+.color-2.restricted {
+    background: repeating-linear-gradient(
+    45deg,
+        #ffe49c,
+        #ffe49c 10px,
+        #78fff2 10px,
+        #78fff2 20px
+    );
 }
 .color-3 {
     background-color: #e587ff;
 }
-.color-4 {
+.color-3.selected {
     background: repeating-linear-gradient(
     45deg,
-        #fdff7d,
-        #fdff7d 10px,
-        #fcae77 10px,
-        #fcae77 20px
+        rgb(255, 255, 0),
+        rgb(255, 255, 0) 10px,
+        #e587ff 10px,
+        #e587ff 20px
+    );
+}
+.color-3.restricted {
+    background: repeating-linear-gradient(
+    45deg,
+        #ffe49c,
+        #ffe49c 10px,
+        #e587ff 10px,
+        #e587ff 20px
     );
 }
