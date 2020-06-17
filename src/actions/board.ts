@@ -300,7 +300,7 @@ export const keyDown = (board: BoardModel, control: ControlModel, history: Histo
     return NO_OP;
 }
 
-export const color = (board: BoardModel, color: number): ActionTypes => {
+export const color = (board: BoardModel, color: number | null): ActionTypes => {
     let newBoard = _.cloneDeep(board);
     newBoard.colorSelectedCells(color);
     return updateBoard(newBoard);

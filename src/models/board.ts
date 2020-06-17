@@ -306,7 +306,7 @@ class BoardModel {
             .forEach(cell => this.setValueOfSingleCell(cell.id, newValue, gameOptions, autoCleanup));
     }
 
-    colorSelectedCells(color: number): void {
+    colorSelectedCells(color: number | null): void {
         this.cells
             .filter(cell => cell.selected)
             .forEach(cell => cell.color = color);

@@ -12,7 +12,7 @@ class Palette extends React.Component<PaletteProps> {
             <div
                 className={classes.join(' ')}
                 key={`palette-${id}`}
-                onClick={() => this.props.color(this.props.board, id)}
+                onClick={() => this.props.color(this.props.board, id === 0 ? null : id)}
             >
             </div>
         );
