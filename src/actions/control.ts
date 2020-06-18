@@ -87,15 +87,17 @@ export const solve = (board: BoardModel, control: ControlModel): ActionTypes => 
 }
 
 export const generateUrl = (board: BoardModel, control: ControlModel): ActionTypes => {
-    const gameState = {
+    const gameState: any = {
         values: board.cells.map(cell => {
             if (cell.value) return cell.value;
             else return '0';
         }).join(''),
-        rowSandwichSums: (control.gameOptions.sandwich) ? board.rowSandwich.map(cell => cell.value) : null,
-        colSandwichSums: (control.gameOptions.sandwich) ? board.colSandwich.map(cell => cell.value) : null,
         gameOptions: control.gameOptions,
     };
+    if (control.gameOptions.sandwich) {
+        gameState.rowSandwichSums = board.rowSandwich.map(cell => cell.value);
+        gameState.colSandwichSums = board.colSandwich.map(cell => cell.value);
+    }
     return {
         type: ACTION_GENERATE_URL,
         payload: {
