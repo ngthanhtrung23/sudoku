@@ -29,6 +29,9 @@
     -webkit-user-select: none;
     -khtml-user-select: none;
 }
+.sandwich-cell-inner {
+    width: 100%;
+}
 .sandwich-cell:after {
     content: '';
     display: block;

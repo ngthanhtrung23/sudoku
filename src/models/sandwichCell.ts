@@ -4,6 +4,7 @@ export class SandwichCellModel {
     error: boolean;
     isFixed: boolean;
     id: string;
+    color: number | null;
 
     constructor(id: string) {
         this.id = id;
@@ -11,6 +12,7 @@ export class SandwichCellModel {
         this.selected = false;
         this.error = false;
         this.isFixed = false;
+        this.color = null;
     }
 
     isValid(): boolean {

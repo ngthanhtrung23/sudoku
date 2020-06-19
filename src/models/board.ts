@@ -3,6 +3,7 @@ import { CellModel, CellValue } from './cell';
 import { GameOptions } from './control';
 import { SandwichCellModel } from './sandwichCell';
 
+// Serialized types used for storing history.
 type SerializedCell = {
     value: CellValue;
     fixed: boolean | null;
@@ -13,6 +14,7 @@ type SerializedCell = {
 type SerializedSandwich = {
     value: number | null;
     fixed: boolean;
+    color: number | null;
 };
 type Serialized = {
     cells: Array<SerializedCell>;
@@ -61,8 +63,8 @@ class BoardModel {
         });
         let obj: Serialized = {
             cells: result,
-            rowSandwiches: this.rowSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed }; }),
-            colSandwiches: this.colSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed }; }),
+            rowSandwiches: this.rowSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed, color: cell.color }; }),
+            colSandwiches: this.colSandwich.map(cell => { return { value: cell.value, fixed: cell.isFixed, color: cell.color }; }),
         };
         return JSON.stringify(obj);
     }
@@ -86,9 +88,11 @@ class BoardModel {
         for (let i = 0; i < 9; i++) {
             this.rowSandwich[i].value = deserialized.rowSandwiches[i].value;
             this.rowSandwich[i].isFixed = deserialized.rowSandwiches[i].fixed;
+            this.rowSandwich[i].color = deserialized.rowSandwiches[i].color;
 
             this.colSandwich[i].value = deserialized.colSandwiches[i].value;
             this.colSandwich[i].isFixed = deserialized.colSandwiches[i].fixed;
+            this.colSandwich[i].color = deserialized.colSandwiches[i].color;
         }
     }
 
@@ -310,10 +314,20 @@ class BoardModel {
         this.cells
             .filter(cell => cell.selected)
             .forEach(cell => cell.color = color);
+        
+        // Also allow color sandwich clues.
+        this.rowSandwich
+            .filter(cell => cell.selected)
+            .forEach(cell => cell.color = color);
+        this.colSandwich
+            .filter(cell => cell.selected)
+            .forEach(cell => cell.color = color);
     }
 
     clearAllColors(): void {
         this.cells.forEach(cell => cell.color = null);
+        this.rowSandwich.forEach(cell => cell.color = null);
+        this.colSandwich.forEach(cell => cell.color = null);
     }
 
     unsetSelectedCells(): void {
